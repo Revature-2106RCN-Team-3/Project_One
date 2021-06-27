@@ -11,5 +11,7 @@
 | notifications | holds all notifications | PK username & SK notification_id |
 |post_and_comments | holds all post and comments | PK username & SK post_id |
 
+Table uses "us-east-1" as its region
+
 ### Links
 

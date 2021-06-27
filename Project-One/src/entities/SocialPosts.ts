@@ -12,6 +12,7 @@ export interface IPost {
     parentPostId: string;
     like: boolean;
     dislikes: boolean;
+    mainPost: boolean;
   }
   
   class Post implements IPost {
@@ -23,6 +24,7 @@ export interface IPost {
     public parentPostId: string;
     public like: boolean;
     public dislikes: boolean;
+    public mainPost: boolean;
 
   
     /**
@@ -46,7 +48,11 @@ export interface IPost {
       this.postText= postText || "";
       this.like = like || false;
       this.dislikes = dislikes || false;
-
+      if(this.postId === this.parentPostId){
+        this.mainPost = true;
+      }else{
+        this.mainPost = false;
+      }
     }
     
 
