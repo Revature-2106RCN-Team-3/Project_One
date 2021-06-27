@@ -24,6 +24,14 @@ Create a social media application utilizing nodejs and react to provide people a
 ### Deadline
 07/09/2021
 
+### Team Members (Template Only)
+| Name  | Primary | Alternate |
+| ----- | ------- | --------- |
+| Matt  | Project Manager | Test Manager |
+| Hannah | Design Manager | Security Manager |
+| Kent | Security Manager | Project Manager |
+| Brandon | Test Manager | Design Manager |
+
 ### Teams
 | Number | Member 1 | Member 2 | Member 3 | Member 4 |
 | ------ | -------- | -------- | -------- | -------- |
