@@ -1,19 +1,36 @@
+import bcrypt from "bcrypt";
+
+
+
+ 
+
 export interface IUser {
-  email: string;
+  userName: string; // this is their email address
   name: string;
-  displayName: string;
+  publicName: string; // this is their public facing names
+  userNameHash: string;
 }
 
 class User implements IUser {
-  public email: string;
+  public userName: string;
   public name: string;
-  public displayName: string;
+  public publicName: string;
+  public userNameHash: string;
 
-  constructor(email: string, name?: string, displayName?: string) {
-    this.email = email;
+  constructor(userName: string, userNameHash?: string, name?: string, publicName?: string) {
+    this.userName = userName;
     this.name = name || "";
-    this.displayName = displayName || "";
+    this.publicName = publicName || "";
+    this.userNameHash = userNameHash ||  String(this.updatePassTest(userName));
+  }
+
+  async updatePassTest(x: string) {
+    const saltRounds = 10;
+    const password = x;
+    return bcrypt.hash(password, saltRounds);
   }
 }
+
+
 
 export default User;

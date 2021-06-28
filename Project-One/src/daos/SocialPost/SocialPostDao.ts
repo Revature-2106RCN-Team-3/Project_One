@@ -41,6 +41,10 @@ export interface IPostDao {
 class SocialPostDao implements IPostDao {
 
     /** 
+     * 
+     *  resource used: 
+     * https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.04.html
+     * 
      * @param postInfo
      * @returns 
      */
@@ -51,9 +55,7 @@ class SocialPostDao implements IPostDao {
         const params = {
             TableName: TABLE_NAME,
             IndexName : 'username-main_post-index',
-            KeyConditionExpression : {"#username = :username",
-            "#mainpost = :mainpost"
-            },
+            KeyConditionExpression : "#username = :username",
             ExpressionAttributeNames:{
                 "#username": "username"
             },    
