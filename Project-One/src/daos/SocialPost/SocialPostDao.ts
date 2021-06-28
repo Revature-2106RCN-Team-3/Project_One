@@ -40,9 +40,7 @@ export interface IPostDao {
 
 class SocialPostDao implements IPostDao {
 
-    /**
-     * *takes in fips from routes (states) and passes it to 
-     * *    the DB to retrieve the matching fips 
+    /** 
      * @param postInfo
      * @returns 
      */
@@ -68,13 +66,12 @@ class SocialPostDao implements IPostDao {
     }
 
     /**
-     * * takes in the state from the url and queries the db to retrieve
-     * *    the matching state (i.e Alaska)
+     * 
      *  
      * resource used: 
      * https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.04.html
      *      
-     * @param stateLookUp 
+     * @param
      * @returns 
      */
     public getComments(postInfo: IPost): Promise<IPost | null>{
@@ -109,7 +106,7 @@ class SocialPostDao implements IPostDao {
 
     /**
      * * this uses the put function to either create a new item or replace an old item
-     * @param stateInfo 
+     * @param
      * @returns 
      */
     public async addorUpdatePost(stateInfo: IPost): Promise<void> {
