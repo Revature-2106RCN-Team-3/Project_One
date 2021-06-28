@@ -7,8 +7,8 @@ import logger from '@shared/Logger';
 
 
 // Start the server
-const httpPort = Number(process.env.HTTPPORT || 3000);
-const httpsPort = Number(process.env.HTTPSPORT || 3001);
+const httpPort = Number(process.env.HTTPPORT || 8080);
+const httpsPort = Number(process.env.HTTPSPORT || 8081);
 http.createServer(app).listen(httpPort, () => {
     
     logger.info('Http server started on port: ' + httpPort);
