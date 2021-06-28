@@ -8,7 +8,6 @@ export interface IPost {
     postId: string; // unique id tied to each post/comment/like/dislike
     postDateTime: string;
     postText: string;
-    publicName: string;
     parentPostId: string; // this is used to identify parent post for comments
     like: boolean;
     dislikes: boolean;
@@ -20,7 +19,6 @@ export interface IPost {
     public postId: string;
     public postDateTime: string;
     public postText: string;
-    public publicName: string;
     public parentPostId: string;
     public like: boolean;
     public dislikes: boolean;
@@ -39,9 +37,8 @@ export interface IPost {
      * @param like 
      * @param dislikes 
      */
-    constructor(userName: string, publicName?: string, postDateTime?: string, parentPostId?: string,postText?: string,like?: boolean ,dislikes?: boolean) {
+    constructor(userName: string, postDateTime?: string, parentPostId?: string,postText?: string,like?: boolean ,dislikes?: boolean) {
       this.userName = userName;
-      this.publicName = publicName || "";
       this.postId = "${username}*${postDateTime}";
       this.postDateTime = postDateTime || String(Date.now());
       this.parentPostId = parentPostId || "${username}*${postDateTime}";
