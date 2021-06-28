@@ -1,33 +1,33 @@
 export interface IMessage {
     userName: string;
-    postId: string;
-    parentPostId: string;
-    postDateTime: string;
+    messageId: string;
+    parentMessageId: string;
+    messageDateTime: string;
     recipientUserName: string;
-    postText: string;
+    messageText: string;
     senderPublicName: string;
     recipientPublicName: string;
   }
   
   class Message implements IMessage {
     public userName: string;
-    public postId: string;
-    public parentPostId: string;
-    public postDateTime: string;
+    public messageId: string;
+    public parentMessageId: string;
+    public messageDateTime: string;
     public recipientUserName: string;
-    public postText: string;
+    public messageText: string;
     public senderPublicName: string;
     public recipientPublicName: string;
 
   
-    constructor(userName: string, recipientUserName?: string, parentPostId?: string, postDateTime?: string, postText?: string, senderPublicName?: string,
+    constructor(userName: string, recipientUserName?: string, parentMessageId?: string, messageDateTime?: string, messageText?: string, senderPublicName?: string,
           recipientPublicName?: string) {
       this.userName = userName;
       this.recipientUserName = recipientUserName || this.userName;
-      this.postId = `${userName}*${postDateTime}`;
-      this.parentPostId = parentPostId || `${userName}*${postDateTime}`;
-      this.postDateTime = postDateTime || String(Date.now());
-      this.postText = postText || "";
+      this.messageId = `${userName}*${messageDateTime}`;
+      this.parentMessageId = parentMessageId || `${userName}*${messageDateTime}`;
+      this.messageDateTime = messageDateTime || String(Date.now());
+      this.messageText = messageText || "";
       this.senderPublicName = senderPublicName || "";
       this.recipientPublicName = recipientPublicName || "";
     }
