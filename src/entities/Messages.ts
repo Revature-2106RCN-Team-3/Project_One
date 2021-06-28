@@ -1,24 +1,37 @@
-export interface IPost {
-    email: string;
-    parentPost: string;
-    post: string;
-    displayName: string;
+export interface IMessage {
+    userName: string;
+    postId: string;
+    parentPostId: string;
+    postDateTime: string;
+    recipientUserName: string;
+    postText: string;
+    senderPublicName: string;
+    recipientPublicName: string;
   }
   
-  class Post implements IPost {
-    public email: string;
-    public displayName: string;
-    public parentPost: string;
-    public post: string;
+  class Message implements IMessage {
+    public userName: string;
+    public postId: string;
+    public parentPostId: string;
+    public postDateTime: string;
+    public recipientUserName: string;
+    public postText: string;
+    public senderPublicName: string;
+    public recipientPublicName: string;
 
   
-    constructor(email: string, displayName: string,parentPost: string, post: string) {
-      this.email = email;
-      this.displayName = displayName;
-      this.parentPost = parentPost;
-      this.post = post;
+    constructor(userName: string, recipientUserName?: string, parentPostId?: string, postDateTime?: string, postText?: string, senderPublicName?: string,
+          recipientPublicName?: string) {
+      this.userName = userName;
+      this.recipientUserName = recipientUserName || this.userName;
+      this.postId = `${userName}*${postDateTime}`;
+      this.parentPostId = parentPostId || `${userName}*${postDateTime}`;
+      this.postDateTime = postDateTime || String(Date.now());
+      this.postText = postText || "";
+      this.senderPublicName = senderPublicName || "";
+      this.recipientPublicName = recipientPublicName || "";
     }
 
   }
   
-  export default Post;
+  export default Message;
