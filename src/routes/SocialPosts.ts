@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import SocialPostDao from '@daos/SocialPost/SocialPostDao';
 import { paramMissingError } from '@shared/constants';
 
-const userDao = new UserDao();
+const socialPostDao = new SocialPostDao();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
 /**
@@ -15,8 +15,8 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  * @returns 
  */
  export async function getAllPosts(req: Request, res: Response) {
-    const posts = await SocialPostDao.getAll();
-    return res.status(OK).json({users});
+    const posts = await socialPostDao.getAll();
+    return res.status(OK).json({posts});
 }
 
 
@@ -34,7 +34,7 @@ export async function addOneUser(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await userDao.add(user);
+    await socialPostDao.add(user);
     return res.status(CREATED).end();
 }
 
@@ -54,7 +54,7 @@ export async function updateOneUser(req: Request, res: Response) {
         });
     }
     user.id = Number(user.id);
-    await userDao.update(user);
+    await socialPostDao.update(user);
     return res.status(OK).end();
 }
 
@@ -68,6 +68,6 @@ export async function updateOneUser(req: Request, res: Response) {
  */
 export async function deleteOneUser(req: Request, res: Response) {
     const { id } = req.params;
-    await userDao.delete(Number(id));
+    await socialPostDao.delete(Number(id));
     return res.status(OK).end();
 }
