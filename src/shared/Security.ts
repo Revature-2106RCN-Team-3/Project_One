@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import express from "express";
 //TODO Call this from server.ts
 /**
