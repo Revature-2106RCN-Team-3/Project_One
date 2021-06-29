@@ -102,4 +102,8 @@ dist
 
 # TernJS port file
 .tern-port
+<<<<<<< Updated upstream
 package-lock.json
+=======
+package-lock.json
+>>>>>>> Stashed changes

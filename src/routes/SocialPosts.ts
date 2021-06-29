@@ -28,13 +28,13 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  * @returns 
  */
 export async function addOneUser(req: Request, res: Response) {
-    const { user } = req.body;
-    if (!user) {
+    const { socialPosts } = req.body;
+    if (!socialPosts) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    await socialPostDao.add(user);
+    await socialPostDao.addorUpdatePost(socialPosts);
     return res.status(CREATED).end();
 }
 
@@ -47,14 +47,14 @@ export async function addOneUser(req: Request, res: Response) {
  * @returns 
  */
 export async function updateOneUser(req: Request, res: Response) {
-    const { user } = req.body;
-    if (!user) {
+    const { socialPosts } = req.body;
+    if (!socialPosts) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    user.id = Number(user.id);
-    await socialPostDao.update(user);
+    
+    await socialPostDao.addorUpdatePost(socialPosts);
     return res.status(OK).end();
 }
 
@@ -67,7 +67,7 @@ export async function updateOneUser(req: Request, res: Response) {
  * @returns 
  */
 export async function deleteOneUser(req: Request, res: Response) {
-    const { id } = req.params;
-    await socialPostDao.delete(Number(id));
+    const { username } = req.params;
+    await socialPostDao.deletePost(String(username));
     return res.status(OK).end();
 }

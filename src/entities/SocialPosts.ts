@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+
 /**
  ** table: post_and_comments
  *  this will be used for both post and comments on the main objective
@@ -14,6 +16,9 @@ export interface IPost {
     mainPost: boolean;
   }
   
+  /**
+   * 
+   */
   class Post implements IPost {
     public userName: string;
     public postId: string;
@@ -30,18 +35,24 @@ export interface IPost {
      * this will allow us to both add post as well as pull specific post/comments in reporters
      * 
      * @param userName 
-     * @param publicName 
      * @param postDateTime 
      * @param parentPostId 
      * @param postText 
      * @param like 
      * @param dislikes 
      */
+<<<<<<< Updated upstream
     constructor(userName: string, postDateTime?: string, parentPostId?: string,postText?: string,like?: boolean ,dislikes?: boolean) {
       this.userName = userName;
       this.postId = "${username}*${postDateTime}";
+=======
+    // eslint-disable-next-line max-len
+    constructor(userName: string, postDateTime?: string, parentPostId?: string,postText?: string,like?: boolean ,dislikes?: boolean) {
+      this.userName = userName;
+      this.postId = '${username}*${postDateTime}';
+>>>>>>> Stashed changes
       this.postDateTime = postDateTime || String(Date.now());
-      this.parentPostId = parentPostId || "${username}*${postDateTime}";
+      this.parentPostId = parentPostId || '${username}*${postDateTime}';
       this.postText= postText || "";
       this.like = like || false;
       this.dislikes = dislikes || false;
@@ -51,7 +62,14 @@ export interface IPost {
         this.mainPost = false;
       }
     }
-    
+
+    async updatePassTest(x: string) {
+      const saltRounds = 10;
+      const password = x;
+      
+      const hash = await bcrypt.hash(password, saltRounds);
+      return String(hash);
+    }
 
   }
   
