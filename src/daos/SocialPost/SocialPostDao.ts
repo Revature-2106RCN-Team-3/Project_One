@@ -52,12 +52,13 @@ class SocialPostDao implements IPostDao {
         const params = {
             TableName: TABLE_NAME,
             IndexName : 'username-main_post-index',
-            KeyConditionExpression : "#username = :username",
+            KeyConditionExpression : "#username = :username and main_post = :main_post",
             ExpressionAttributeNames:{
                 "#username": "username"
             },    
             ExpressionAttributeValues:{
-                ":username": postInfo.userName      
+                ":username": postInfo.userName,
+                ":mainPost": postInfo.mainPost      
             }
         };
         const db = dynamoClient.query(params).promise();

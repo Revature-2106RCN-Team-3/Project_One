@@ -27,7 +27,7 @@ export async function getComments(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await socialPostDao.addorUpdatePost(socialPosts);
+    await socialPostDao.getComments(socialPosts);
     return res.status(CREATED).end();
 }
 
@@ -38,7 +38,7 @@ export async function getComments(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function addOneUser(req: Request, res: Response) {
+export async function addorUpdatePost(req: Request, res: Response) {
     const { socialPosts } = req.body;
     if (!socialPosts) {
         return res.status(BAD_REQUEST).json({
@@ -57,7 +57,7 @@ export async function addOneUser(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function updateOneUser(req: Request, res: Response) {
+export async function updateOnePost(req: Request, res: Response) {
     const { socialPosts } = req.body;
     if (!socialPosts) {
         return res.status(BAD_REQUEST).json({
@@ -77,7 +77,7 @@ export async function updateOneUser(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function deleteOneUser(req: Request, res: Response) {
+export async function deleteOnePost(req: Request, res: Response) {
     const { username } = req.params;
     await socialPostDao.deletePost(String(username));
     return res.status(OK).end();
