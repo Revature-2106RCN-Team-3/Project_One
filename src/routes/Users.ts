@@ -36,7 +36,7 @@ export async function addOneUser(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await userDao.add(user);
+    await userDao.addOrUpdate(user);
     return res.status(CREATED).end();
 }
 
@@ -69,6 +69,6 @@ export async function updateOneUser(req: Request, res: Response) {
  */
 export async function deleteOneUser(req: Request, res: Response) {
     const { userName } = req.params;
-    await userDao.deleteUser(userName);
+    await userDao.delete(userName);
     return res.status(OK).end();
 }
