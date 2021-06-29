@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export interface IMessage {
     userName: string;
     messageId: string;

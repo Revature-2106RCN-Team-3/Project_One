@@ -4,6 +4,9 @@ import AWS from 'aws-sdk';
 import logger from '@shared/Logger';
 
 //TODO Update Loggers
+/*******************************
+ * 
+ */
 
 // Access details stored in env foler under prestart
 AWS.config.update({
@@ -24,16 +27,11 @@ const TABLE_NAME = "post_and_comments";
  * kept the interface to keep me honest and organized :)
  */
 export interface IPostDao {
-    // gets all post you did
-    getPost: (postInfo: IPost) => Promise<IPost | null>;
-    //!get all comments under each parent post?
-    getComments: (postInfo: IPost) => Promise<IPost | null>;
-    //! gets all post from friends? or just get all post
-    getAll: () => Promise<IPost[]>;
-    // add or update post based on post_id and current username
-    addorUpdatePost: (postInfo: IPost) => Promise<void>;
-    //delete a post based on post_id and current username
-    deletePost: (username: string) => Promise<void>
+    getPost: (postInfo: IPost) => Promise<IPost | null>; // TODO gets all post you did
+    getComments: (postInfo: IPost) => Promise<IPost | null>;//TODO get all comments under each parent post?
+    getAll: () => Promise<IPost[]>;//! gets all post from friends? or just get all post and main post only
+    addorUpdatePost: (postInfo: IPost) => Promise<void>; //TODO add or update post based on post_id and current username
+    deletePost: (username: string) => Promise<void> // TODO delete a post based on post_id and current username
 }
 
 class SocialPostDao implements IPostDao {
@@ -47,7 +45,7 @@ class SocialPostDao implements IPostDao {
      * @param postInfo
      * @returns 
      */
-    //TODO create an index to pull all posts if it equals parent post
+    //TODO create an index to pull all posts if it equals true for main post
     //TODO investigate additional keys needed for query parameters
     public getPost(postInfo: IPost): Promise<IPost | null>{
         logger.info("Using route ```getPost``` in DAO");

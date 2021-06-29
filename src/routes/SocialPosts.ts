@@ -20,6 +20,17 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 }
 
 
+export async function getComments(req: Request, res: Response) {
+    const { socialPosts } = req.body;
+    if (!socialPosts) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    }
+    await socialPostDao.addorUpdatePost(socialPosts);
+    return res.status(CREATED).end();
+}
+
 /**
  * Add one user.
  * 
