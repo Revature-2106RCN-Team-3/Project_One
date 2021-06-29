@@ -55,7 +55,6 @@ export async function updateOneUser(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    user.id = Number(user.id);
     await userDao.update(user);
     return res.status(OK).end();
 }
@@ -69,7 +68,7 @@ export async function updateOneUser(req: Request, res: Response) {
  * @returns 
  */
 export async function deleteOneUser(req: Request, res: Response) {
-    const { id } = req.params;
-    await userDao.delete(Number(id));
+    const { userName } = req.params;
+    await userDao.deleteUser(userName);
     return res.status(OK).end();
 }
