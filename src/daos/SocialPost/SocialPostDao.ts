@@ -18,7 +18,7 @@ const dynamoClient =  new AWS.DynamoDB.DocumentClient();
 /**
  * 
 */
-const TABLE_NAME = "post_and_comments123";
+const TABLE_NAME = "post_and_comments";
 
 /**
  * kept the interface to keep me honest and organized :)
