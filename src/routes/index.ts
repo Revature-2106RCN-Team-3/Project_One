@@ -3,8 +3,7 @@
 import { Router } from 'express';
 // import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
 import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts, getComments } from './SocialPosts';
-// import { getMessages, newMessageGroup, newMessage, updateMessage, deleteMessageGroup, deleteMessageGroup } from './Messages';
-import { getMessages, getAll } from './Messages';
+import { getMessages, getAll, deleteMessage } from './Messages';
 
 // // Login-route
 // //TODO invistigate necessity of this route
@@ -38,8 +37,8 @@ messagesRouter.get('/messages/', getAll); //! delete me later!!!
 // messagesRouter.post('/messages/new/groupmessage', newMessageGroup); // creates a new direct message
 // messagesRouter.post('/messages/new/:parentMessageId/', newMessage) // direct message from within existing direct message
 // messagesRouter.put('/messages/update', updateMessage); // update message from within existing direct message
-// messagesRouter.delete('/messages/delete/:parentMessageId', deleteMessageGroup); // deletes direct message group
-// messagesRouter.delete('/messages/delete/:parentMessageId/:messageId', deleteMessageGroup); // deletes direct message group
+messagesRouter.delete('/messages/delete/:parentMessageId', deleteMessage); // deletes direct message group
+messagesRouter.delete('/messages/delete/:parentMessageId/:messageId', deleteMessage); // deletes direct message group
 
 // Export the base-router
 const baseRouter = Router();

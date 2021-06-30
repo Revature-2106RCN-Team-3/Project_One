@@ -1,9 +1,12 @@
-import AWS from "aws-sdk";
+import AWS, { AWSError, DynamoDB } from "aws-sdk";
+import { ItemList, ScanInput, ScanOutput } from "aws-sdk/clients/dynamodb";
 
-const {parallelScan} = require('@shelf/dynamodb-parallel-scan');
+// const {parallelScan} = require('@shelf/dynamodb-parallel-scan');
 // Currently, all primary keys are username, so this works for our purposes.
 //  If any table takes on a different primary key, a new function like getSortKey will have to be added, and code will need updating for the new primary key(s)
 const PRIMARY_KEY = 'username';
+
+const dynamoClient =  new AWS.DynamoDB.DocumentClient();
 
 // Procures the sort key based on the input tablename. Added for simplicity's sake; must be updated if tables are modified
 function getSortKey(tableName: string){
@@ -25,8 +28,8 @@ function getSortKey(tableName: string){
 function prepareScanParams(tableName: string, sortKey?: string, expressions?: [string, string]) {
   // Aliases are used by the computed properties, and by ExpressionAttributeNames
     let keyAlias = `#${PRIMARY_KEY}`;
-    // This must be of type: Record because typescript is persnickety. Secondary is any just in case a delete all is desired.
-    let scanParams: Record<string, any> = {
+    // This must be of type: ScanInput because typescript is persnickety. Secondary is any just in case a delete all is desired.
+    let scanParams: ScanInput = {
       TableName: tableName,
       ProjectionExpression: keyAlias,
       ExpressionAttributeNames: {
@@ -46,6 +49,19 @@ function prepareScanParams(tableName: string, sortKey?: string, expressions?: [s
     //  using the values given in the expressions array
     if (expressions) {
       let filters = expressions.map((i) => {
+        let expressionAlias = `#${i[0]}`;
+        let expressionValueAlias = `:${i[0]}`;
+        scanParams = {
+          ...scanParams,
+          ExpressionAttributeNames: {
+            ...scanParams.ExpressionAttributeNames,
+            [expressionAlias]: i[0],
+          },
+          ExpressionAttributeValues: {
+            ...scanParams.ExpressionAttributeValues,
+            expressionValueAlias: {[i[0]]: i[1]},
+          }
+        }
         return `#${i[0]} = :${i[0]}`;
       })
       let filterExpression = filters[0];
@@ -56,37 +72,23 @@ function prepareScanParams(tableName: string, sortKey?: string, expressions?: [s
         ...scanParams,
         FilterExpression: filterExpression,
       }
-      for (let x in expressions) {
-        let expressionAlias = `#${expressions[x][0]}`;
-        let expressionValueAlias = `:${expressions[x][0]}`;
-        scanParams = {
-          ...scanParams,
-          ExpressionAttributeNames: {
-            ...scanParams.ExpressionAttributeNames,
-            [expressionAlias]: expressions[x][0],
-          },
-          ExpressionAttributeValues: {
-            ...scanParams.ExpressionAttributeValues,
-            [expressionValueAlias]: expressions[x][1],
-          }
-        }
-      }
     }
     
     return scanParams;
 }
 
 // Performs the scan, retrieving up to 250 items at once.
-async function fetchScan(params: {}) {
+async function fetchScan(params: ScanInput) {
   const CONCURRENCY = 250;
-  const items = await parallelScan(params, {concurrency: CONCURRENCY});
-  return items;
+  // const items = await parallelScan(params, {concurrency: CONCURRENCY});
+  const items = await dynamoClient.scan(params).promise();
+  return items.Items;
 }
 
 // Using the results of the previous scan (which thanks to ProjectionExpression only returns the key anyway), builds 250 delete requests
-function prepareRequestParams(items: [], sortKey?: string) {
+function prepareRequestParams(items?: ItemList, sortKey?: string) {
   let requestParams;
-  if (sortKey) {
+  if (sortKey && items) {
     requestParams = items.map((i) => ({
       DeleteRequest: {
         Key: {
@@ -95,7 +97,7 @@ function prepareRequestParams(items: [], sortKey?: string) {
         },
       },
     }));
-  } else {
+  } else if (items) {
     requestParams = items.map((i) => ({
       DeleteRequest: {
         Key: {
@@ -103,6 +105,8 @@ function prepareRequestParams(items: [], sortKey?: string) {
         },
       },
     }));
+  } else {
+    console.log('No items returned.');
   }
 
   return requestParams;
@@ -124,11 +128,11 @@ async function sliceInChunks(arr: any) {
 }
 
 // Sends up to 10 consecutive delete operations of 25 items at a time.
-async function deleteItems(chunks: any) {
+async function deleteItems(tableName: string, chunks: any) {
   const documentclient = new AWS.DynamoDB.DocumentClient();
 
   const promises = chunks.map(async function(chunk: any) {
-    const params = {RequestItems: {[TABLE_NAME]: chunk}};
+    const params = {RequestItems: {[tableName]: chunk}};
     const res = await documentclient.batchWrite(params).promise();
     return res;
   });
@@ -148,6 +152,6 @@ export default async function deleteInBatch(tableName: string, filter?: [string,
   const items = await fetchScan(scanParams);
   const params = prepareRequestParams(items, sortKey);
   const chunks = await sliceInChunks(params);
-  const res = await deleteItems(chunks);
+  const res = await deleteItems(tableName, chunks);
   console.log(JSON.stringify(res));
 };

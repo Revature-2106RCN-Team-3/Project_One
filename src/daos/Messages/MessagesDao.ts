@@ -2,6 +2,7 @@
 import { IMessage } from '@entities/Messages';
 import AWS from 'aws-sdk';
 import logger from '@shared/Logger';
+import deleteInBatch from '../Shared/dynamodb_batch_delete';
 
 //TODO Update Loggers
 
@@ -98,15 +99,25 @@ class MessagesDao implements IMessageDao {
 
     public async deleteMessage(messageInfo: IMessage, parentMessageID?: string, messageId?: string): Promise<void> {
         logger.info("Using route ```delete``` in messages DAO");
-         const params = {
-            TableName: TABLE_NAME,
-            Key: {
-                "username": messageInfo.userName,
-                "message_id": messageId,
-            }
-        };
-        await dynamoClient.delete(params).promise();
-        return Promise.resolve(undefined);
+        if (!messageId && parentMessageID) {
+            this.deleteGroup(messageInfo, parentMessageID);
+        } else if (messageId) {
+            const params = {
+                TableName: TABLE_NAME,
+                Key: {
+                    "username": messageInfo.userName,
+                    "message_id": messageId,
+                }
+            };
+            await dynamoClient.delete(params).promise();
+            return Promise.resolve(undefined);
+        }
+    }
+
+    public async deleteGroup(messageInfo: IMessage, parentMessageID: string) {
+        logger.info("Using route ```deleteGroup``` in messages DAO");
+        
+        deleteInBatch('messages', ['parent_message_id', parentMessageID]);
     }
 
 }
