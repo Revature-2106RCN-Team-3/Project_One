@@ -108,8 +108,10 @@ class SocialPostDao implements IPostDao {
     }
 
     /**
-     * !new post only!!
-     * TODO clean up and possibly separate based on true action
+     * !new main post only!!
+     * TODO create like/dislike
+     * todo create comment postInfo
+     * 
      * 
      * * this uses the put function to either create a new item or replace an old item
      * @param
@@ -122,24 +124,23 @@ class SocialPostDao implements IPostDao {
             Item: {
                 username: postInfo.userName,
                 post_id: `${postInfo.userName}*` + String(Date.now()),
-                parent_post_id: postInfo.parentPostId,
-                post_date_time: postInfo.postDateTime,
+                parent_post_id: `${postInfo.userName}*` + String(Date.now()),
+                post_date_time: String(Date.now()),
                 post_text: postInfo.postText,
-                main_post: postInfo.mainPost,
+                main_post: 1,
                 // like: postInfo.like,
                 dislikes: postInfo.dislikes
             }
-            // Key: {
-                
-            // }
         };
         await dynamoClient.put(params).promise();
         return Promise.resolve(undefined);
     }
 
     /**
-     * takes in fips from the url and attempts to locate and delete the Item
-     * from teh database if it exist
+     * * COMPLETED!
+     * 
+     * deletes individual post_id/comment
+     * 
      * @param fips 
      * @returns 
      */
