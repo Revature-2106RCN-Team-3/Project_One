@@ -30,10 +30,13 @@ export interface IPostDao {
     //! gets all post from friends? or just get all post and main post only
     getAll: () => Promise<IPost[]>;//*COMPLETED! 
     addMainPost: (postInfo: IPost) => Promise<void>; //TODO add or update post based on post_id and current username
+    addComment: (postInfo: IPost) => Promise<void>;
+    addLikeDislike: (postInfo: IPost) => Promise<void>;
     deletePost: (postInfo: IPost) => Promise<void> // TODO delete a post based on post_id and current username
 }
 
 class SocialPostDao implements IPostDao {
+    
 
     /** 
      * * COMPLETED!
@@ -135,6 +138,47 @@ class SocialPostDao implements IPostDao {
         await dynamoClient.put(params).promise();
         return Promise.resolve(undefined);
     }
+
+    public async addComment: (postInfo: IPost) => Promise<void>{
+        logger.info("Using route addMainPost in DAO");
+        const params = {
+            TableName: TABLE_NAME,
+            Item: {
+                username: postInfo.userName,
+                post_id: `${postInfo.userName}*` + String(Date.now()),
+                parent_post_id: `${postInfo.userName}*` + String(Date.now()),
+                post_date_time: String(Date.now()),
+                post_text: postInfo.postText,
+                main_post: 1,
+                // like: postInfo.like,
+                dislikes: postInfo.dislikes
+            }
+        };
+        await dynamoClient.put(params).promise();
+        return Promise.resolve(undefined);
+    }
+
+
+    public async addLikeDislike: (postInfo: IPost) => Promise<void> {
+        logger.info("Using route addMainPost in DAO");
+        
+        const params = {
+            TableName: TABLE_NAME,
+            Item: {
+                username: postInfo.userName,
+                post_id: `${postInfo.userName}*` + String(Date.now()),
+                parent_post_id: `${postInfo.userName}*` + String(Date.now()),
+                post_date_time: String(Date.now()),
+                post_text: postInfo.postText,
+                main_post: 1,
+                // like: postInfo.like,
+                dislikes: postInfo.dislikes
+            }
+        };
+        await dynamoClient.put(params).promise();
+        return Promise.resolve(undefined);
+    }
+
 
     /**
      * * COMPLETED!
