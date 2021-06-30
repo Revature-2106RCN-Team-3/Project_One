@@ -139,7 +139,7 @@ class SocialPostDao implements IPostDao {
         return Promise.resolve(undefined);
     }
 
-    public async addComment: (postInfo: IPost) => Promise<void>{
+    public async addComment(postInfo: IPost): Promise<void> {
         logger.info("Using route addMainPost in DAO");
         const params = {
             TableName: TABLE_NAME,
@@ -149,7 +149,7 @@ class SocialPostDao implements IPostDao {
                 parent_post_id: `${postInfo.userName}*` + String(Date.now()),
                 post_date_time: String(Date.now()),
                 post_text: postInfo.postText,
-                main_post: 1,
+                main_post: 0,
                 // like: postInfo.like,
                 dislikes: postInfo.dislikes
             }
@@ -159,9 +159,8 @@ class SocialPostDao implements IPostDao {
     }
 
 
-    public async addLikeDislike: (postInfo: IPost) => Promise<void> {
+    public async addLikeDislike(postInfo: IPost): Promise<void> {
         logger.info("Using route addMainPost in DAO");
-        
         const params = {
             TableName: TABLE_NAME,
             Item: {
@@ -170,7 +169,7 @@ class SocialPostDao implements IPostDao {
                 parent_post_id: `${postInfo.userName}*` + String(Date.now()),
                 post_date_time: String(Date.now()),
                 post_text: postInfo.postText,
-                main_post: 1,
+                main_post: 0,
                 // like: postInfo.like,
                 dislikes: postInfo.dislikes
             }
