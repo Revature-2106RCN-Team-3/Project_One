@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { IMessage } from '@entities/Messages';
 import AWS from 'aws-sdk';
 import logger from '@shared/Logger';
@@ -24,6 +25,7 @@ export interface IMessageDao {
     getMessages: (messageInfo: IMessage) => Promise<IMessage | null>;
     // Retrieves only top-level messages (letting a user view all their DM groups/chains)
     getGroups: (messageInfo: IMessage) => Promise<IMessage | null>;
+    getAll: () => Promise<IMessage[]>;
     // Potential future implementation; returns a specific message if linked to
     // getLinked: (messageInfo: IMessage) => Promise<iMessage | null>;
     // add or update message based on message_id and current username
@@ -33,6 +35,15 @@ export interface IMessageDao {
 }
 
 class MessagesDao implements IMessageDao {
+
+    public getAll(): Promise<IMessage[]> {
+        logger.info("Using route getAll in DAO");
+        const params = {
+            TableName: TABLE_NAME,
+        };
+        const db = dynamoClient.scan(params).promise();
+        return db.then();
+    }
 
     public getMessages(messageInfo: IMessage): Promise<IMessage | null>{
         logger.info("Using route ```getMessages``` in messages DAO");
