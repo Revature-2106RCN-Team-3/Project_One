@@ -19,6 +19,16 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
     return res.status(OK).json({posts});
 }
 
+export async function getMainPosts(req: Request, res: Response) {
+    const { socialPosts } = req.body;
+    if (!socialPosts) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    }
+    await socialPostDao.getPost(socialPosts);
+    return res.status(CREATED).end();
+}
 
 export async function getComments(req: Request, res: Response) {
     const { socialPosts } = req.body;
@@ -40,12 +50,15 @@ export async function getComments(req: Request, res: Response) {
  */
 export async function addorUpdatePost(req: Request, res: Response) {
     const { socialPosts } = req.body;
+    console.log(socialPosts);
+    console.log("i dont think im pulling in the body lol")
     if (!socialPosts) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    await socialPostDao.addorUpdatePost(socialPosts);
+    console.log("made it to the part where i call the dao");
+    await socialPostDao.addMainPost(socialPosts);
     return res.status(CREATED).end();
 }
 
@@ -64,8 +77,7 @@ export async function updateOnePost(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    
-    await socialPostDao.addorUpdatePost(socialPosts);
+    await socialPostDao.addMainPost(socialPosts);
     return res.status(OK).end();
 }
 

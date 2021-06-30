@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable max-len */
 import { Router } from 'express';
 // import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
-// import { getAllPosts, addorUpdatePost, deleteOnePost, deleteParentPost } from './SocialPosts';
+import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts } from './SocialPosts';
 // import { getMessages, newMessageGroup, newMessage, updateMessage, deleteMessageGroup, deleteMessageGroup } from './Messages';
 
 // // Login-route
@@ -21,11 +22,12 @@ import { Router } from 'express';
 
 // Post-route
 const postRouter = Router();
-// postRouter.get('/', getAllPosts);// this is intended to get all main posts
-// postRouter.post('/post/add', addorUpdatePost);
+postRouter.get('/', getAllPosts);// this is intended to get all main posts
+postRouter.get('/mainpost', getMainPosts);
+postRouter.post('/post/add', addorUpdatePost);
 // postRouter.put('/post/update', updateOnePost);
-// postRouter.delete('/post/delete/:id', deleteOnePost);
-postRouter.delete('/post/delete/:id', deleteParentPost);
+postRouter.delete('/post/delete/:username', deleteOnePost);
+// postRouter.delete('/post/delete/:id', deleteParentPost);
 
 // Messages-route
 // const messagesRouter = Router();

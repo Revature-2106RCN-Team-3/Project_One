@@ -13,7 +13,7 @@ export interface IPost {
     parentPostId: string; // this is used to identify parent post for comments
     like: boolean;
     dislikes: boolean;
-    mainPost: boolean;
+    mainPost: number;
   }
   
   /**
@@ -27,7 +27,7 @@ export interface IPost {
     public parentPostId: string;
     public like: boolean;
     public dislikes: boolean;
-    public mainPost: boolean;
+    public mainPost: number;
 
   
     /**
@@ -42,19 +42,15 @@ export interface IPost {
      * @param dislikes 
      */
     // eslint-disable-next-line max-len
-    constructor(userName: string, postDateTime?: string, parentPostId?: string,postText?: string,like?: boolean ,dislikes?: boolean) {
-      this.userName = userName;
-      this.postId = '${userName}*${postDateTime}';
+    constructor(userName: string,postId?: string,like?: boolean, postDateTime?: string, parentPostId?: string,postText?: string,dislikes?: boolean, mainPost?: number) {
+      this.userName = userName + "123456";
+      this.postId = postId || "${userName}*" + String(Date.now());
       this.postDateTime = postDateTime || String(Date.now());
-      this.parentPostId = parentPostId || '${userName}*${postDateTime}';
+      this.parentPostId = parentPostId || `${userName}*` + String(Date.now());
       this.postText= postText || "";
       this.like = like || false;
       this.dislikes = dislikes || false;
-      if(this.postId === this.parentPostId){
-        this.mainPost = true;
-      }else{
-        this.mainPost = false;
-      }
+      this.mainPost = mainPost || Number(this.mainPostFunc());
     }
 
     async updatePassTest(x: string) {
@@ -65,6 +61,13 @@ export interface IPost {
       return String(hash);
     }
 
+    mainPostFunc(){
+    if(this.postId === this.parentPostId){
+      this.mainPost = 1;
+    }else{
+      this.mainPost = 0;
+    }
+    }
   }
   
   export default Post;

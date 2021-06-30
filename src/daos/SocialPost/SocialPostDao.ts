@@ -30,7 +30,7 @@ export interface IPostDao {
     getPost: (postInfo: IPost) => Promise<IPost | null>; // TODO gets all post you did
     getComments: (postInfo: IPost) => Promise<IPost | null>;//TODO get all comments under each parent post?
     getAll: () => Promise<IPost[]>;//! gets all post from friends? or just get all post and main post only
-    addorUpdatePost: (postInfo: IPost) => Promise<void>; //TODO add or update post based on post_id and current username
+    addMainPost: (postInfo: IPost) => Promise<void>; //TODO add or update post based on post_id and current username
     deletePost: (username: string) => Promise<void> // TODO delete a post based on post_id and current username
 }
 
@@ -52,13 +52,14 @@ class SocialPostDao implements IPostDao {
         const params = {
             TableName: TABLE_NAME,
             IndexName : 'username-main_post-index',
-            KeyConditionExpression : "#username = :username and main_post = :main_post",
+            KeyConditionExpression : "#username = :username AND #main_post = :mainpost",
             ExpressionAttributeNames:{
-                "#username": "username"
+                "#username": "username",
+                "#main_post": "main_post"
             },    
             ExpressionAttributeValues:{
                 ":username": postInfo.userName,
-                ":mainPost": postInfo.mainPost      
+                ":mainpost": postInfo.mainPost    
             }
         };
         const db = dynamoClient.query(params).promise();
@@ -75,7 +76,7 @@ class SocialPostDao implements IPostDao {
      * @returns 
      */
     public getComments(postInfo: IPost): Promise<IPost | null>{
-        logger.info("Using route ```getState``` in DAO");
+        logger.info("Using route getComments in DAO");
         const params = {
             TableName: TABLE_NAME,
             IndexName : 'username-main_post-index',
@@ -96,7 +97,7 @@ class SocialPostDao implements IPostDao {
      * @returns 
      */
     public getAll(): Promise<IPost[]> {
-        logger.info("Using route ```getAll``` in DAO");
+        logger.info("Using route getAll in DAO");
         const params = {
             TableName: TABLE_NAME,
         };
@@ -109,14 +110,25 @@ class SocialPostDao implements IPostDao {
      * @param
      * @returns 
      */
-    public async addorUpdatePost(postInfo: IPost): Promise<void> {
-        logger.info("Using route ```addorUpdate``` in DAO");
+    public async addMainPost(postInfo: IPost): Promise<void> {
+        logger.info("Using route addMainPost in DAO");
+        console.log("im in the DAO ");
+        
         const params = {
             TableName: TABLE_NAME,
-            Item: postInfo,
-            Key: {
-                "postid": postInfo.postId
+            Item: {
+                username: postInfo.userName,
+                post_id: postInfo.postId,
+                parent_post_id: postInfo.parentPostId,
+                post_date_time: postInfo.postDateTime,
+                post_text: postInfo.postText,
+                main_post: postInfo.mainPost,
+                like: postInfo.like,
+                dislikes: postInfo.dislikes
             }
+            // Key: {
+                
+            // }
         };
         await dynamoClient.put(params).promise();
         return Promise.resolve(undefined);
