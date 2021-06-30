@@ -1,4 +1,5 @@
-const { DocumentClient } = require('aws-sdk/clients/dynamodb');
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
 const isTest = process.env.JEST_WORKER_ID;
 const config = {
@@ -21,7 +22,7 @@ it('Should insert one item into table', async () => {
     await ddb
         .put({ TableName: TABLE_NAME, 
             Item: { 
-                fips: 1, 
+                username: 1, 
                 county: 'test county', 
                 population: 444, 
                 state: 'test state', 

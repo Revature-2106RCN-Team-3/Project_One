@@ -31,13 +31,13 @@ postRouter.delete('/post/delete/:username', deleteOnePost);
 // postRouter.delete('/post/delete/:id', deleteParentPost);
 
 // Messages-route
-// const messagesRouter = Router();
-// messagesRouter.get('/messages/all', getMessages); // shows all your message groups
-// messagesRouter.post('/messages/new/groupmessage', newMessageGroup); // creates a new direct message
-// messagesRouter.post('/messages/new/:parentMessageId/', newMessage) // direct message from within existing direct message
-// messagesRouter.put('/messages/update', updateMessage); // update message from within existing direct message
-// messagesRouter.delete('/messages/delete/:parentMessageId', deleteMessageGroup); // deletes direct message group
-// messagesRouter.delete('/messages/delete/:parentMessageId/:messageId', deleteMessageGroup); // deletes direct message group
+const messagesRouter = Router();
+messagesRouter.get('/messages/all', getMessages); // shows all your message groups
+messagesRouter.post('/messages/new/groupmessage', newMessageGroup); // creates a new direct message
+messagesRouter.post('/messages/new/:parentMessageId/', newMessage) // direct message from within existing direct message
+messagesRouter.put('/messages/update', updateMessage); // update message from within existing direct message
+messagesRouter.delete('/messages/delete/:parentMessageId', deleteMessageGroup); // deletes direct message group
+messagesRouter.delete('/messages/delete/:parentMessageId/:messageId', deleteMessageGroup); // deletes direct message group
 
 // Export the base-router
 const baseRouter = Router();
