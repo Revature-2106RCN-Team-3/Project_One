@@ -7,7 +7,11 @@ import { paramMissingError } from '@shared/constants';
 const socialPostDao = new SocialPostDao();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
-/**
+//************************************************************************************************
+//* Get Operators
+//************************************************************************************************
+
+/** COMPLETED!
  * Get all users.
  * 
  * @param req 
@@ -19,7 +23,12 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
     return res.status(OK).json({posts});
 }
 
-
+/** COMPLETED!
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function getMainPosts(req: Request, res: Response) {
     const { socialPosts } = req.body;
     logger.info(socialPosts.userName);
@@ -33,7 +42,12 @@ export async function getMainPosts(req: Request, res: Response) {
     return res.status(OK).json({post});
 }
 
-
+/** COMPLETED!
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function getComments(req: Request, res: Response) {
     const { socialPosts } = req.body;
     if (!socialPosts) {
@@ -45,8 +59,12 @@ export async function getComments(req: Request, res: Response) {
     return res.status(OK).json({post});
 }
 
+//************************************************************************************************
+//* Post Operators
+//************************************************************************************************
 
-/**
+/** COMPLETED!
+ * 
  * Add one user.
  * 
  * @param req 
@@ -67,7 +85,12 @@ export async function addMainPost(req: Request, res: Response) {
     return res.status(CREATED).end();
 }
 
-
+/** COMPLETED!
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function addComment(req: Request, res: Response) {
     const { socialPosts } = req.body;
     if (!socialPosts) {
@@ -79,7 +102,16 @@ export async function addComment(req: Request, res: Response) {
     return res.status(CREATED).end();
 }
 
+//************************************************************************************************
+//* Put Operators
+//************************************************************************************************
 
+/** COMPLETED!
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function addLikeDislike(req: Request, res: Response) {
     const { socialPosts } = req.body;
     console.log(socialPosts);
@@ -94,9 +126,9 @@ export async function addLikeDislike(req: Request, res: Response) {
     return res.status(CREATED).end();
 }
 
-
-/**
- * Update one user.
+/** COMPLETED!
+ * 
+ * Update one post.
  * 
  * @param req 
  * @param res 
@@ -113,8 +145,11 @@ export async function updateOnePost(req: Request, res: Response) {
     return res.status(OK).end();
 }
 
+//************************************************************************************************
+//* Delete Operators
+//************************************************************************************************
 
-/**
+/** COMPLETED!
  * Delete one user.
  * 
  * @param req 

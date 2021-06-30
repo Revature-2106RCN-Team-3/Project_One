@@ -13,14 +13,19 @@ import { getAllPosts, deleteOnePost, getMainPosts, getComments, addComment, addM
 // loginRouter.put('/update', updateOneUser);
 // loginRouter.delete('/delete/:id', deleteOneUser);
 
-// User-route
+
+//************************************************************************************************
+//* User-routes
+//************************************************************************************************
 const userRouter = Router();
 userRouter.get('/all', getAllUsers);
 userRouter.post('/add', addOneUser);
 userRouter.put('/update', updateOneUser);
 userRouter.delete('/delete/:id', deleteOneUser);
 
-// Post-route
+//************************************************************************************************
+//* Post-routes
+//************************************************************************************************
 const postRouter = Router();
 postRouter.get('/post', getAllPosts);// this is intended to get all main posts
 postRouter.get('/post/getmainpost', getMainPosts);
@@ -31,7 +36,10 @@ postRouter.post('/post/addvibe', addLikeDislike)
 postRouter.put('/post/update', updateOnePost);
 postRouter.delete('/post/delete', deleteOnePost);
 
-// Messages-route
+
+//************************************************************************************************
+//* Messages-routes
+//************************************************************************************************
 const messagesRouter = Router();
 // messagesRouter.get('/messages/all', getMessages); // shows all your message groups
 // messagesRouter.post('/messages/new/groupmessage', newMessageGroup); // creates a new direct message

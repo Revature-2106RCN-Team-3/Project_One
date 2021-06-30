@@ -16,7 +16,7 @@ const dynamoClient = new AWS.DynamoDB.DocumentClient();
 // create const for table name
 const TABLE_NAME = "post_and_comments";
 
-/**
+/** COMPLETED!
  * kept the interface to keep me honest and organized :)
  */
 export interface IPostDao {
@@ -191,6 +191,11 @@ class SocialPostDao implements IPostDao {
     return Promise.resolve(undefined);
   }
 
+  /** COMPLETED!
+   * 
+   * @param postInfo 
+   * @returns 
+   */
   public async addLikeDislike(postInfo: IPost): Promise<void> {
     logger.info("Using route addLikeDislike in DAO");
     let likeVibe;
