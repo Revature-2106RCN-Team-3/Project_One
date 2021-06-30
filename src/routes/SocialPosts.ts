@@ -19,6 +19,7 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
     return res.status(OK).json({posts});
 }
 
+
 export async function getMainPosts(req: Request, res: Response) {
     const { socialPosts } = req.body;
     logger.info(socialPosts.userName);
@@ -32,6 +33,7 @@ export async function getMainPosts(req: Request, res: Response) {
     return res.status(OK).json({post});
 }
 
+
 export async function getComments(req: Request, res: Response) {
     const { socialPosts } = req.body;
     if (!socialPosts) {
@@ -43,6 +45,7 @@ export async function getComments(req: Request, res: Response) {
     return res.status(OK).json({post});
 }
 
+
 /**
  * Add one user.
  * 
@@ -50,7 +53,34 @@ export async function getComments(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function addorUpdatePost(req: Request, res: Response) {
+export async function addMainPost(req: Request, res: Response) {
+    const { socialPosts } = req.body;
+    console.log(socialPosts);
+    console.log("i dont think im pulling in the body lol")
+    if (!socialPosts) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    }
+    console.log("made it to the part where i call the dao");
+    await socialPostDao.addMainPost(socialPosts);
+    return res.status(CREATED).end();
+}
+
+
+export async function addComment(req: Request, res: Response) {
+    const { socialPosts } = req.body;
+    if (!socialPosts) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    }
+    await socialPostDao.addComment(socialPosts);
+    return res.status(CREATED).end();
+}
+
+
+export async function addLikeDislike(req: Request, res: Response) {
     const { socialPosts } = req.body;
     console.log(socialPosts);
     console.log("i dont think im pulling in the body lol")
@@ -79,7 +109,7 @@ export async function updateOnePost(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await socialPostDao.addMainPost(socialPosts);
+    await socialPostDao.updateComment(socialPosts);
     return res.status(OK).end();
 }
 
