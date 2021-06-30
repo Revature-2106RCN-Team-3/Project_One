@@ -11,26 +11,25 @@ AWS.config.update({
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = "profile"
 export interface IUserDao {
-  getOne: (userName: string) => Promise<IUser | null>;
+  getOne: (username: string) => Promise<IUser | null>;
   getAll: () => Promise<IUser[]>;
-  addOrUpdate: (user: IUser) => Promise<void>;
+  add: (user: IUser) => Promise<void>;
   update: (user: IUser) => Promise<void>;
-  delete: (userName: string) => Promise<void>;
+  delete: (username: string) => Promise<void>;
 }
 
 class UserDao implements IUserDao {
   /**
-   * @param userName
+   * @param username
    */
-  public getOne(userName: string): Promise<IUser | null> {
-    logger.info("Using getOne route in DAO")
+  public getOne(username: string): Promise<IUser | null> {
+    logger.info("Using getOne route in DAO");
     const params = {
       TableName: TABLE_NAME,
       Key: {
-        "username": userName
+        "username": username
       }
-    };
-
+    }
     const db = dynamoClient.query(params).promise();
     return db.then();
   }
@@ -41,7 +40,7 @@ class UserDao implements IUserDao {
   public getAll(): Promise<IUser[]> {
     logger.info("Using getAll route in DAO");
     const params = {
-      TableName: TABLE_NAME,
+      TableName: TABLE_NAME
     };
     const db = dynamoClient.scan(params).promise();
     return db.then();
@@ -51,16 +50,19 @@ class UserDao implements IUserDao {
    *
    * @param user
    */
-  public async addOrUpdate(user: IUser): Promise<void> {
-    logger.info("Using addOrUpdate route in DAO");
+  public async add(user: IUser): Promise<void> {
+    logger.info("Using add route in DAO");
+    const { username, first_name, last_name, phone_number, publicName } = user;
     const params = {
       TableName: TABLE_NAME,
-      Item: user,
-      Key: {
-        "username": user.userName
+      Item: {
+        username:{S: username},
+        first_name:{S: first_name},
+        last_name:{S: last_name},
+        phone_number:{S: phone_number},
+        public_name:{S: publicName}
       }
-    };
-    
+    }
     await dynamoClient.put(params).promise();
     return Promise.resolve(undefined);
   }
@@ -69,33 +71,34 @@ class UserDao implements IUserDao {
    *
    * @param user
    */
-     public async update(user: IUser): Promise<void> {
-      logger.info("Using addOrUpdate route in DAO");
-      const params = {
-        TableName: TABLE_NAME,
-        Item: user,
-        Key: {
-          "username": user.userName
-        }
-      };
-      
-      await dynamoClient.put(params).promise();
-      return Promise.resolve(undefined);
+  public async update(user: IUser): Promise<void> {
+    logger.info("Using update route in DAO");
+    const params = {
+      TableName: TABLE_NAME,
+      Item: {
+        username:{S: user.username},
+        first_name:{S: user.first_name},
+        last_name:{S: user.last_name},
+        phone_number:{S: user.phone_number},
+        public_name:{S: user.publicName}
+      }
     }
-  
+    await dynamoClient.put(params).promise();
+    return Promise.resolve(undefined);
+  }
 
   /**
    *
    * @param userName
    */
-  public async delete(userName: string): Promise<void> {
+  public async delete(username:string): Promise<void> {
     logger.info("Using delete route in DAO");
     const params = {
       TableName: TABLE_NAME,
       Key: {
-        "username": userName
+        "username": username
       }
-    };
+    }
     await dynamoClient.delete(params).promise();
     return Promise.resolve(undefined);
   }
