@@ -6,7 +6,7 @@ displayUsers();
 
 
 function displayUsers() {
-    httpGet('/api/users/all')
+    httpGet('/home/users/all')
         .then(response => response.json())
         .then((response) => {
             var allUsers = response.users;
@@ -135,7 +135,7 @@ function deleteUser(ele) {
 
 
 function httpGet(path) {
-    return fetch(path, getOptions('GET'))
+    return fetch(path, getOptions('GET'));
 }
 
 

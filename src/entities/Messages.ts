@@ -1,24 +1,38 @@
-export interface IPost {
-    email: string;
-    parentPost: string;
-    post: string;
-    displayName: string;
+/* eslint-disable max-len */
+export interface IMessage {
+    userName: string;
+    messageId: string;
+    parentMessageId: string;
+    messageDateTime: string;
+    recipientUserName: string;
+    messageText: string;
+    senderPublicName: string;
+    recipientPublicName: string;
   }
   
-  class Post implements IPost {
-    public email: string;
-    public displayName: string;
-    public parentPost: string;
-    public post: string;
+  class Message implements IMessage {
+    public userName: string;
+    public messageId: string;
+    public parentMessageId: string;
+    public messageDateTime: string;
+    public recipientUserName: string;
+    public messageText: string;
+    public senderPublicName: string;
+    public recipientPublicName: string;
 
   
-    constructor(email: string, displayName: string,parentPost: string, post: string) {
-      this.email = email;
-      this.displayName = displayName;
-      this.parentPost = parentPost;
-      this.post = post;
+    constructor(userName: string, recipientUserName?: string, parentMessageId?: string, messageDateTime?: string, messageText?: string, senderPublicName?: string,
+          recipientPublicName?: string) {
+      this.userName = userName;
+      this.recipientUserName = recipientUserName || this.userName;
+      this.messageId = `${userName}*${messageDateTime}`;
+      this.parentMessageId = parentMessageId || `${userName}*${messageDateTime}`;
+      this.messageDateTime = messageDateTime || String(Date.now());
+      this.messageText = messageText || "";
+      this.senderPublicName = senderPublicName || "";
+      this.recipientPublicName = recipientPublicName || "";
     }
 
   }
   
-  export default Post;
+  export default Message;
