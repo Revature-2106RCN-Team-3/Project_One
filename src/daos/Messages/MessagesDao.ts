@@ -4,7 +4,7 @@ import logger from '@shared/Logger';
 
 //TODO Update Loggers
 
-// Access details stored in env foler under prestart
+// Access details stored in env folder under prestart
 AWS.config.update({
     region: process.env.AWS_DEFAULT_REGION,
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -16,7 +16,6 @@ const dynamoClient =  new AWS.DynamoDB.DocumentClient();
 
 /**
  * identify the name of the table we are using
- * ATM this is going to give an ERROR ON PURPOSE, as I don't know the name of the table
 */
 const TABLE_NAME = 'messages';
 

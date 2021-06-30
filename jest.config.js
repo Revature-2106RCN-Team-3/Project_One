@@ -7,7 +7,7 @@
 
 import {defaults} from "jest.config";
 
-export = {
+exports = {
   // ...
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],
   // ...
