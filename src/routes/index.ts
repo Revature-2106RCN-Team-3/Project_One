@@ -13,12 +13,12 @@ import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts, getComments 
 // loginRouter.put('/update', updateOneUser);
 // loginRouter.delete('/delete/:id', deleteOneUser);
 
-// // User-route
-// const userRouter = Router();
-// userRouter.get('/all', getAllUsers);
-// userRouter.post('/add', addOneUser);
-// userRouter.put('/update', updateOneUser);
-// userRouter.delete('/delete/:id', deleteOneUser);
+// User-route
+const userRouter = Router();
+userRouter.get('/all', getAllUsers);
+userRouter.post('/add', addOneUser);
+userRouter.put('/update', updateOneUser);
+userRouter.delete('/delete/:id', deleteOneUser);
 
 // Post-route
 const postRouter = Router();
@@ -42,4 +42,6 @@ messagesRouter.delete('/messages/delete/:parentMessageId/:messageId', deleteMess
 // Export the base-router
 const baseRouter = Router();
 baseRouter.use('/home', postRouter);
+baseRouter.use('/home', messagesRouter);
+baseRouter.use('/home', userRouter);
 export default baseRouter;
