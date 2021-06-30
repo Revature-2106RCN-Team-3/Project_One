@@ -117,7 +117,7 @@ class MessagesDao implements IMessageDao {
     public async deleteGroup(messageInfo: IMessage, parentMessageID: string) {
         logger.info("Using route ```deleteGroup``` in messages DAO");
         
-        deleteInBatch('messages', ['parent_message_id', parentMessageID]);
+        await deleteInBatch('messages', ['parent_message_id', parentMessageID]);
     }
 
 }

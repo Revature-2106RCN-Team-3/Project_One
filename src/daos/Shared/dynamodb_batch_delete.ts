@@ -1,6 +1,7 @@
+/* eslint-disable max-len */
 import AWS, { AWSError, DynamoDB } from "aws-sdk";
 import { ItemList, ScanInput, ScanOutput } from "aws-sdk/clients/dynamodb";
-
+import logger from '@shared/Logger';
 // const {parallelScan} = require('@shelf/dynamodb-parallel-scan');
 // Currently, all primary keys are username, so this works for our purposes.
 //  If any table takes on a different primary key, a new function like getSortKey will have to be added, and code will need updating for the new primary key(s)
@@ -27,7 +28,7 @@ function getSortKey(tableName: string){
 // Takes in expressions in the form of tuples; eg. ['message_parent_id', '10200405']
 function prepareScanParams(tableName: string, sortKey?: string, expressions?: [string, string]) {
   // Aliases are used by the computed properties, and by ExpressionAttributeNames
-    let keyAlias = `#${PRIMARY_KEY}`;
+    const keyAlias = `#${PRIMARY_KEY}`;
     // This must be of type: ScanInput because typescript is persnickety. Secondary is any just in case a delete all is desired.
     let scanParams: ScanInput = {
       TableName: tableName,
@@ -38,7 +39,7 @@ function prepareScanParams(tableName: string, sortKey?: string, expressions?: [s
     }
     // This permits operation even in tables with no sort key. Note the use of the spread operator (...) to let previous attributes persist
     if (sortKey) {
-      let sortAlias = `#${sortKey}`;
+      const sortAlias = `#${sortKey}`;
       scanParams.ProjectionExpression = `${keyAlias}, ${sortAlias}`
       scanParams.ExpressionAttributeNames = {
         ...scanParams.ExpressionAttributeNames,
@@ -48,9 +49,9 @@ function prepareScanParams(tableName: string, sortKey?: string, expressions?: [s
     // Permits to run without expressions, and builds FilterExpression, ExpressionAttributeNames, and ExpressionAttributeValues
     //  using the values given in the expressions array
     if (expressions) {
-      let filters = expressions.map((i) => {
-        let expressionAlias = `#${i[0]}`;
-        let expressionValueAlias = `:${i[0]}`;
+      const filters = expressions.map((i) => {
+        const expressionAlias = `#${i[0]}`;
+        const expressionValueAlias = `:${i[0]}`;
         scanParams = {
           ...scanParams,
           ExpressionAttributeNames: {
@@ -113,7 +114,7 @@ function prepareRequestParams(items?: ItemList, sortKey?: string) {
 }
 
 // ...since 250 delete requests cannot be passed in a single batch, produces chunks of 25 at a time.
-async function sliceInChunks(arr: any) {
+function sliceInChunks(arr: any) {
   let i;
   let j;
   const CHUNK_SIZE = 25; // DynamoDB BatchWriteItem limit
@@ -147,11 +148,18 @@ async function deleteItems(tableName: string, chunks: any) {
  * eg: deleteInBatch('messages', ['parent_id', '130201']);
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 export default async function deleteInBatch(tableName: string, filter?: [string, string]) {
+  logger.info("getsortkey");
   const sortKey = getSortKey(tableName);
+  logger.info("prepareScanParams");
   const scanParams = prepareScanParams(tableName, sortKey, filter);
+  logger.info("fetchScan");
   const items = await fetchScan(scanParams);
+  logger.info("prepareRequestParams");
   const params = prepareRequestParams(items, sortKey);
-  const chunks = await sliceInChunks(params);
+  logger.info("sliceInChunks");
+  const chunks = sliceInChunks(params);
+  logger.info("deleteItems");
   const res = await deleteItems(tableName, chunks);
+  logger.info("stringify");
   console.log(JSON.stringify(res));
-};
+}
