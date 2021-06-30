@@ -1,6 +1,6 @@
 import StatusCodes from 'http-status-codes';
 import { Request, Response } from 'express';
-
+import logger from '@shared/Logger';
 import SocialPostDao from '@daos/SocialPost/SocialPostDao';
 import { paramMissingError } from '@shared/constants';
 
@@ -21,13 +21,15 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
 export async function getMainPosts(req: Request, res: Response) {
     const { socialPosts } = req.body;
+    logger.info(socialPosts.userName);
+    logger.info("i dont think im pulling in the body lol")
     if (!socialPosts) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    await socialPostDao.getPost(socialPosts);
-    return res.status(CREATED).end();
+    const post = await socialPostDao.getPost(socialPosts);
+    return res.status(OK).json({post});
 }
 
 export async function getComments(req: Request, res: Response) {
@@ -37,8 +39,8 @@ export async function getComments(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await socialPostDao.getComments(socialPosts);
-    return res.status(CREATED).end();
+    const post = await socialPostDao.getComments(socialPosts);
+    return res.status(OK).json({post});
 }
 
 /**
@@ -90,7 +92,12 @@ export async function updateOnePost(req: Request, res: Response) {
  * @returns 
  */
 export async function deleteOnePost(req: Request, res: Response) {
-    const { username } = req.params;
-    await socialPostDao.deletePost(String(username));
+    const { socialPosts } = req.body;
+    if (!socialPosts) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    }
+    await socialPostDao.deletePost(socialPosts);
     return res.status(OK).end();
 }

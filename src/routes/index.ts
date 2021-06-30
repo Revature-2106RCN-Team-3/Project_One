@@ -2,7 +2,7 @@
 /* eslint-disable max-len */
 import { Router } from 'express';
 // import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
-import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts } from './SocialPosts';
+import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts, getComments } from './SocialPosts';
 // import { getMessages, newMessageGroup, newMessage, updateMessage, deleteMessageGroup, deleteMessageGroup } from './Messages';
 
 // // Login-route
@@ -23,7 +23,8 @@ import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts } from './Soc
 // Post-route
 const postRouter = Router();
 postRouter.get('/', getAllPosts);// this is intended to get all main posts
-postRouter.get('/mainpost', getMainPosts);
+postRouter.get('/post/mainpost', getMainPosts);
+postRouter.get('/post/comments', getComments)
 postRouter.post('/post/add', addorUpdatePost);
 // postRouter.put('/post/update', updateOnePost);
 postRouter.delete('/post/delete/:username', deleteOnePost);

@@ -11,7 +11,7 @@ export interface IPost {
     postDateTime: string;
     postText: string;
     parentPostId: string; // this is used to identify parent post for comments
-    like: boolean;
+    // like: boolean;
     dislikes: boolean;
     mainPost: number;
   }
@@ -25,7 +25,7 @@ export interface IPost {
     public postDateTime: string;
     public postText: string;
     public parentPostId: string;
-    public like: boolean;
+    // public like: boolean;
     public dislikes: boolean;
     public mainPost: number;
 
@@ -42,13 +42,13 @@ export interface IPost {
      * @param dislikes 
      */
     // eslint-disable-next-line max-len
-    constructor(userName: string,postId?: string,like?: boolean, postDateTime?: string, parentPostId?: string,postText?: string,dislikes?: boolean, mainPost?: number) {
-      this.userName = userName + "123456";
-      this.postId = postId || "${userName}*" + String(Date.now());
+    constructor(userName: string,postId?: string, postDateTime?: string, parentPostId?: string,postText?: string,dislikes?: boolean, mainPost?: number) {
+      this.userName = userName;
+      this.postId = postId || `${userName}*` + String(Date.now());
       this.postDateTime = postDateTime || String(Date.now());
       this.parentPostId = parentPostId || `${userName}*` + String(Date.now());
       this.postText= postText || "";
-      this.like = like || false;
+      // this.like = like || false;
       this.dislikes = dislikes || false;
       this.mainPost = mainPost || Number(this.mainPostFunc());
     }
