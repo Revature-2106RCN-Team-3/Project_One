@@ -18,35 +18,56 @@ const dynamoClient =  new AWS.DynamoDB.DocumentClient();
  * identify the name of the table we are using
  * ATM this is going to give an ERROR ON PURPOSE, as I don't know the name of the table
 */
-const TABLE_NAME = ;
+const TABLE_NAME = 'messages';
 
 export interface IMessageDao {
     // retrieves message history with a given user
-    getMessages: (postInfo: IMessage) => Promise<IMessage | null>;
+    getMessages: (messageInfo: IMessage) => Promise<IMessage | null>;
+    // Retrieves only top-level messages (letting a user view all their DM groups/chains)
+    getGroups: (messageInfo: IMessage) => Promise<IMessage | null>;
     // Potential future implementation; returns a specific message if linked to
-    // getLinked: (postInfo: IMessage) => Promise<iMessage | null>;
-    // add or update post based on post_id and current username
-    addorUpdateMessage: (postInfo: IMessage) => Promise<void>;
-    //delete a post based on post_id and current username
-    deleteMessage: (postInfo: IMessage) => Promise<void>
+    // getLinked: (messageInfo: IMessage) => Promise<iMessage | null>;
+    // add or update message based on message_id and current username
+    addorUpdateMessage: (messageInfo: IMessage) => Promise<void>;
+    //delete a message based on message_id and current username
+    deleteMessage: (messageInfo: IMessage, parentMessageId: string, messageId?: string) => Promise<void>
 }
 
 class MessagesDao implements IMessageDao {
 
     public getMessages(messageInfo: IMessage): Promise<IMessage | null>{
-        logger.info("Using route ```getPost``` in messages DAO");
+        logger.info("Using route ```getMessages``` in messages DAO");
         const params = {
             TableName: TABLE_NAME,
-            IndexName : , // Unknown index name
-            KeyConditionExpression : "#username = :username",
+            FilterExpression : "#username = :username AND #group = :group",
             ExpressionAttributeNames:{
-                "#username": "username"
+                "#username": "username",
+                "#group": "parent_message_id",
             },    
             ExpressionAttributeValues:{
-                ":username": messageInfo.userName
+                ":username": messageInfo.userName,
+                ":group": messageInfo.parentMessageId,
             }
         };
-        const db = dynamoClient.query(params).promise();
+        const db = dynamoClient.scan(params).promise();
+        return db.then()
+    }
+
+    public getGroups(messageInfo: IMessage): Promise<IMessage | null>{
+        logger.info("Using route ```getMessages``` in messages DAO");
+        const params = {
+            TableName: TABLE_NAME,
+            FilterExpression : "#username = :username AND #group = #message",
+            ExpressionAttributeNames:{
+                "#username": "username",
+                "#group": "parent_message_id",
+                "#message": "message_id",
+            },    
+            ExpressionAttributeValues:{
+                ":username": messageInfo.userName,
+            }
+        };
+        const db = dynamoClient.scan(params).promise();
         return db.then()
     }
 
@@ -56,7 +77,8 @@ class MessagesDao implements IMessageDao {
             TableName: TABLE_NAME,
             Item: messageInfo,
             Key: {
-                "fips": messageInfo.fips
+                "username": messageInfo.userName,
+                "message_id": messageInfo.messageId,
             }
         };
         await dynamoClient.put(params).promise();
@@ -64,12 +86,13 @@ class MessagesDao implements IMessageDao {
     }
 
 
-    public async deleteMessage(fips: number): Promise<void> {
+    public async deleteMessage(messageInfo: IMessage, parentMessageID?: string, messageId?: string): Promise<void> {
         logger.info("Using route ```delete``` in messages DAO");
          const params = {
             TableName: TABLE_NAME,
             Key: {
-                "fips": fips
+                "username": messageInfo.userName,
+                "message_id": messageId,
             }
         };
         await dynamoClient.delete(params).promise();
@@ -77,3 +100,5 @@ class MessagesDao implements IMessageDao {
     }
 
 }
+
+export default MessagesDao;

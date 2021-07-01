@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import express from "express";
 import {StatusCodes} from "http-status-codes";
 //TODO Call this from server.ts

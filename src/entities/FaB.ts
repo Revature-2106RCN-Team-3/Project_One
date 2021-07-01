@@ -1,10 +1,10 @@
-export interface IPost {
+export interface IFab {
     email: string;
     displayName: string;
     friend: boolean;
   }
   
-  class Post implements IPost {
+  class Fab implements IFab {
     public email: string;
     public displayName: string;
     public friend: boolean;
@@ -18,4 +18,4 @@ export interface IPost {
 
   }
   
-  export default Post;
+  export default Fab;

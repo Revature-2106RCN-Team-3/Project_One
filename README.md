@@ -32,6 +32,8 @@ Create a social media application utilizing nodejs and react to provide people a
 | Kent | Security Manager | Project Manager |
 | Brandon | Test Manager | Design Manager |
 
+test verbage
+
 ### Teams
 | Number | Member 1 | Member 2 | Member 3 | Member 4 |
 | ------ | -------- | -------- | -------- | -------- |

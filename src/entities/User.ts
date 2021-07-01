@@ -1,27 +1,36 @@
 import bcrypt from "bcrypt";
 
-
-
- 
-
 export interface IUser {
-  userName: string; // this is their email address
-  name: string;
+  username: string; // this is their email address
+  first_name: string;
+  last_name: string;
+  phone_number:string;
   publicName: string; // this is their public facing names
   userNameHash: string;
 }
 
 class User implements IUser {
-  public userName: string;
-  public name: string;
+  public username: string;
+  public first_name: string;
+  public last_name: string;
+  public phone_number: string;
   public publicName: string;
   public userNameHash: string;
 
-  constructor(userName: string, userNameHash?: string, name?: string, publicName?: string) {
-    this.userName = userName;
-    this.name = name || "";
+  constructor(
+    username: string,
+    userNameHash?: string,
+    first_name?: string, 
+    last_name?: string,
+    phone_number?: string, 
+    publicName?: string
+    ) {
+    this.username = username;
+    this.first_name = first_name || "";
+    this.last_name = last_name || "";
+    this.phone_number = phone_number || "";
     this.publicName = publicName || "";
-    this.userNameHash = userNameHash ||  String(this.updatePassTest(userName));
+    this.userNameHash = userNameHash ||  String(this.updatePassTest(username));
   }
 
   async updatePassTest(x: string) {
