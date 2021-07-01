@@ -13,8 +13,8 @@ module.exports =  {
   // ...
   preset: 
     // "jest-dynalite",
-    // "@shelf/jest-dynamodb",
-    "ts-jest",
+    "@shelf/jest-dynamodb",
+    // "ts-jest",
   
   testEnvironment: "jest-dynalite/environment",
   transform: {

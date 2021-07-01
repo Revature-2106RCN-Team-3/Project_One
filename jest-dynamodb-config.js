@@ -36,11 +36,21 @@ module.exports = {
             KeySchema: [{
                 AttributeName: 'username',
                 KeyType: 'HASH'
-            }],
+            },
+            {
+                AttributeName: 'message_id',
+                KeyType: 'RANGE'
+            }
+        ],
             AttributeDefinitions: [{
                 AttributeName: 'username',
                 AttributeType: 'S'
-            }],
+            },
+            {
+                AttributeName: "message_id",
+                AttributeType: "S"
+            }
+        ],
             ProvisionedThroughput: {
                 ReadCapacityUnits: 5,
                 WriteCapacityUnits: 5

@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { IMessage } from '@entities/Messages';
 import AWS from 'aws-sdk';
-import logger from '@shared/Logger';
+import logger from '../../shared/Logger';
 import deleteInBatch from '../Shared/dynamodb_batch_delete';
 
 //TODO Update Loggers
@@ -37,19 +37,21 @@ export interface IMessageDao {
 
 class MessagesDao implements IMessageDao {
 
-    public getAll(): Promise<IMessage[]> {
+    public getAll(tableName?: string, dynamo?: AWS.DynamoDB.DocumentClient): Promise<IMessage[]> {
         logger.info("Using route getAll in DAO");
         const params = {
-            TableName: TABLE_NAME,
+            TableName: tableName || TABLE_NAME,
         };
-        const db = dynamoClient.scan(params).promise();
+        let client;
+        if (dynamo) {client = dynamo} else {client = dynamoClient};
+        const db = client.scan(params).promise();
         return db.then();
     }
 
-    public getMessages(messageInfo: IMessage): Promise<IMessage | null>{
+    public getMessages(messageInfo: IMessage, tableName?: string, dynamo?: AWS.DynamoDB.DocumentClient): Promise<IMessage | null>{
         logger.info("Using route ```getMessages``` in messages DAO");
         const params = {
-            TableName: TABLE_NAME,
+            TableName: tableName || TABLE_NAME,
             FilterExpression : "#username = :username AND #group = :group",
             ExpressionAttributeNames:{
                 "#username": "username",
@@ -60,14 +62,17 @@ class MessagesDao implements IMessageDao {
                 ":group": messageInfo.parentMessageId,
             }
         };
-        const db = dynamoClient.scan(params).promise();
+
+        let client;
+        if (dynamo) {client = dynamo} else {client = dynamoClient};
+        const db = client.scan(params).promise();
         return db.then()
     }
 
-    public getGroups(messageInfo: IMessage): Promise<IMessage | null>{
+    public getGroups(messageInfo: IMessage, tableName?: string, dynamo?: AWS.DynamoDB.DocumentClient): Promise<IMessage | null>{
         logger.info("Using route ```getMessages``` in messages DAO");
         const params = {
-            TableName: TABLE_NAME,
+            TableName: tableName || TABLE_NAME,
             FilterExpression : "#username = :username AND #group = #message",
             ExpressionAttributeNames:{
                 "#username": "username",
@@ -78,46 +83,55 @@ class MessagesDao implements IMessageDao {
                 ":username": messageInfo.userName,
             }
         };
-        const db = dynamoClient.scan(params).promise();
+
+        let client;
+        if (dynamo) {client = dynamo} else {client = dynamoClient};
+        const db = client.scan(params).promise();
         return db.then()
     }
 
-    public async addorUpdateMessage(messageInfo: IMessage): Promise<void> {
+    public async addorUpdateMessage(messageInfo: IMessage, tableName?: string, dynamo?: AWS.DynamoDB.DocumentClient): Promise<void> {
         logger.info("Using route ```addorUpdate``` in messages DAO");
         const params = {
-            TableName: TABLE_NAME,
+            TableName: tableName || TABLE_NAME,
             Item: messageInfo,
             Key: {
                 "username": messageInfo.userName,
                 "message_id": messageInfo.messageId,
             }
         };
-        await dynamoClient.put(params).promise();
+        let client;
+        if (dynamo) {client = dynamo} else {client = dynamoClient};
+        console.log(params.Key);
+        await client.put(params).promise();
         return Promise.resolve(undefined);
     }
 
     // Delete will accomplish nothing if neither parentMessageId nor messageId are given
-    public async deleteMessage(messageInfo: IMessage, parentMessageId?: string, messageId?: string): Promise<void> {
+    public async deleteMessage(messageInfo: IMessage, parentMessageId?: string, messageId?: string, tableName?: string, dynamo?: AWS.DynamoDB.DocumentClient): Promise<void> {
         logger.info("Using route ```delete``` in messages DAO");
         if (!messageId && parentMessageId) {
             this.deleteGroup(messageInfo, parentMessageId);
         } else if (messageId) {
             const params = {
-                TableName: TABLE_NAME,
+                TableName: tableName || TABLE_NAME,
                 Key: {
                     "username": messageInfo.userName,
                     "message_id": messageId,
                 }
             };
-            await dynamoClient.delete(params).promise();
+
+            let client;
+            if (dynamo) {client = dynamo} else {client = dynamoClient};
+            await client.delete(params).promise();
             return Promise.resolve(undefined);
         }
     }
 
-    public async deleteGroup(messageInfo: IMessage, parentMessageID: string) {
+    public async deleteGroup(messageInfo: IMessage, parentMessageID: string, tableName?: string, dynamo?: AWS.DynamoDB.DocumentClient) {
         logger.info("Using route ```deleteGroup``` in messages DAO");
         
-        await deleteInBatch('messages', ['parent_message_id', parentMessageID]);
+        await deleteInBatch(tableName || TABLE_NAME, ['parent_message_id', parentMessageID], dynamo);
     }
 
 }
