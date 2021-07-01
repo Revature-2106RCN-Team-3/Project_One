@@ -1,34 +1,48 @@
+/* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-// import { DocumentClient } from "aws-sdk/clients/dynamodb";
-const { DocumentClient} = require("aws-sdk/clients/dynamodb");
-const {SocialPostDao} = require("./SocialPostDao");
-
-const isTest = process.env.MOCK_DYNAMODB_ENDPOINT;
-const config = {
-  convertEmptyValues: true,
-  ...(isTest && {
-    endpoint: "localhost:8000",
-    sslEnabled: false,
-    region: "local",
-  }),
-};
+// import { DynamoDB, yourConfig } from "aws-sdk";
+// import dotenv from 'dotenv'
+// dotenv.config({ path: 'src/pre-start/env/test.env' });
+import "../../pre-start/test";
+import "jest-dynalite/withDb";
+const {
+  DocumentClient,
+  DynamoDB,
+  yourConfig,
+} = require("aws-sdk/clients/dynamodb");
+import SocialPostDao from "./SocialPostDao";
 
 // const client = new DynamoDB({
-//     config = ({
-//           convertEmptyValues: true,
-//     }),
-//     ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-//       endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-//       sslEnabled: false,
-//       region: "local",
-//     })
-// })
+//   ...yourConfig,
+//   ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
+//     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+//     sslEnabled: false,
+//     region: "local",
+//   }),
+// });
 
+// import AWS from 'aws-sdk';
+// const dynamodb = new AWS.DynamoDB({ region: 'local-env' });
+// const client = new AWS.DynamoDB.DocumentClient({ service: dynamodb });
+const socialPostDao = new SocialPostDao();
 
-const dao = new SocialPostDao();
-const ddb = new DocumentClient(config);
-const TABLE_NAME = "test-posts";
+// const isTest = process.env.JEST_WORKER_ID;
+// const config = {
+//   convertEmptyValues: true,
+//   ...(isTest && {
+//     endpoint: "localhost:8000",
+//     sslEnabled: false,
+//     region: "local-env",
+//   }),
+// };
+
+// const ddb = new DocumentClient(config);
+const TABLE_NAME = "post_and_comments";
+
+// afterAll(async () => {
+//     await new Promise<void>(resolve => setTimeout(() => resolve(), 10000)); // avoid jest open handle error
+//   });
 
 const postObj1 = {
   userName: String("matthewterry68.mt@gmail.com"),
@@ -44,9 +58,11 @@ const postObj1 = {
   mainPost: Number(1),
 };
 
-// describe("getPost", () => {
+describe("getPost", () => {
+  //   jest.setTimeout(30000);
   it("This should pull a Main Post", async () => {
-    expect(await dao.getPost(postObj1)).toEqual({
+    const tst = await socialPostDao.getPost(postObj1);
+    return expect(tst).toEqual({
       userName: String("matthewterry68.mt@gmail.com"),
       postId: String(
         "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW"
@@ -60,7 +76,7 @@ const postObj1 = {
       mainPost: Number(1),
     });
   });
-
+});
 //   it("should handle no value for key", async () => {
 //     expect(await keystore.getItem("a")).toBeUndefined();
 //   });
@@ -74,41 +90,42 @@ const postObj1 = {
  * resource used:
  * https://jestjs.io/docs/dynamodb
  */
-it("Should insert one item into table", async () => {
-  await ddb
-    .put({
-      TableName: TABLE_NAME,
-      Item: {
-        main_post: 1,
-        parent_post_id:
-          "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-        post_date_time: "1625090060153",
-        post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-        post_text: "this is a comment my dudes",
-        username: "matthewterry68.mt@gmail.com",
-      },
-    })
-    .promise();
+// it("Should insert one item into table", async () => {
+//   await ddb
+//     .put({
+//       TableName: TABLE_NAME,
+//       Item: {
+//         main_post: 1,
+//         parent_post_id:
+//           "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
+//         post_date_time: "1625090060153",
+//         post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
+//         post_text: "this is a comment my dudes",
+//         username: "matthewterry68.mt@gmail.com",
+//       },
+//     })
+//     .promise();
 
-  const { Item } = await ddb
-    .get({
-      TableName: TABLE_NAME,
-      Key: { 
-        username: "matthewterry68.mt@gmail.com",
-        post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG"},
-    })
-    .promise();
+//   const { Item } = await ddb
+//     .get({
+//       TableName: TABLE_NAME,
+//       Key: {
+//         username: "matthewterry68.mt@gmail.com",
+//         post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
+//       },
+//     })
+//     .promise();
 
-  return expect(Item).toEqual({
-    main_post: 1,
-    parent_post_id:
-      "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-    post_date_time: "1625090060153",
-    post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-    post_text: "this is a comment my dudes",
-    username: "matthewterry68.mt@gmail.com",
-  });
-});
+//   return expect(Item).toEqual({
+//     main_post: 1,
+//     parent_post_id:
+//       "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
+//     post_date_time: "1625090060153",
+//     post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
+//     post_text: "this is a comment my dudes",
+//     username: "matthewterry68.mt@gmail.com",
+//   });
+// });
 
 // it("Should delete one item from table", async () => {
 //   await ddb.delete({ TableName: TABLE_NAME, Key: { fips: 1 } }).promise();
@@ -118,4 +135,4 @@ it("Should insert one item into table", async () => {
 //     .promise();
 
 //   return expect(Item).withContext;
-// });
+//  });

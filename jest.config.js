@@ -12,14 +12,14 @@ module.exports =  {
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],
   // ...
   preset: 
-    // "jest-dynalite",
+    "jest-dynalite",
     // "@shelf/jest-dynamodb",
-    "ts-jest",
+    // "ts-jest",
   
   testEnvironment: "jest-dynalite/environment",
-  transform: {
-    '^.+\\.tsx?$': 'babel-jest',
-  },
+  // transform: {
+  //   '^.+\\.ts?$': 'babel-jest',
+  // },
   setupFilesAfterEnv: [
     "jest-dynalite/setupTables",
     // Optional (but recommended)

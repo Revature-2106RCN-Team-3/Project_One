@@ -1,18 +1,22 @@
 /* eslint-disable max-len */
 import { IPost } from "@entities/SocialPosts";
 import AWS from "aws-sdk";
-import logger from "@shared/Logger";
-import { createHash } from "@shared/functions";
+import logger from "../../shared/Logger";
+import { createHash } from "../../shared/functions";
+
 
 // Access details stored in env foler under prestart
 AWS.config.update({
   region: process.env.AWS_DEFAULT_REGION,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
+
+logger.info(AWS.config.region);
 // create an instance of AWS
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
+
 // create const for table name
 const TABLE_NAME = "post_and_comments";
 
