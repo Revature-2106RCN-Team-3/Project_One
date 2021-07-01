@@ -53,8 +53,6 @@ export async function updateMessage(req: Request, res: Response) {
 export async function deleteMessage(req: Request, res: Response) {
     const { messages } = req.body;
     const {parentMessageId, messageId} = req.params;
-    // const parentMessageID = req.query.parentMessageId?.toString();
-    // const messageID = req.query.messageId?.toString();
     await messageDao.deleteMessage(messages, parentMessageId, messageId);
     return res.status(OK).end();
 }

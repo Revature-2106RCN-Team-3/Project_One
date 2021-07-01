@@ -60,7 +60,7 @@ function prepareScanParams(tableName: string, sortKey?: string, expressions?: [s
           },
           ExpressionAttributeValues: {
             ...scanParams.ExpressionAttributeValues,
-            expressionValueAlias: {[i[0]]: i[1]},
+            [expressionValueAlias]: {[i[0]]: i[1]},
           }
         }
         return `#${i[0]} = :${i[0]}`;

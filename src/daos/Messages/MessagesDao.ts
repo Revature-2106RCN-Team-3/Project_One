@@ -96,11 +96,11 @@ class MessagesDao implements IMessageDao {
         return Promise.resolve(undefined);
     }
 
-
-    public async deleteMessage(messageInfo: IMessage, parentMessageID?: string, messageId?: string): Promise<void> {
+    // Delete will accomplish nothing if neither parentMessageId nor messageId are given
+    public async deleteMessage(messageInfo: IMessage, parentMessageId?: string, messageId?: string): Promise<void> {
         logger.info("Using route ```delete``` in messages DAO");
-        if (!messageId && parentMessageID) {
-            this.deleteGroup(messageInfo, parentMessageID);
+        if (!messageId && parentMessageId) {
+            this.deleteGroup(messageInfo, parentMessageId);
         } else if (messageId) {
             const params = {
                 TableName: TABLE_NAME,
