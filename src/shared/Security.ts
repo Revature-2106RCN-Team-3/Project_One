@@ -1,4 +1,5 @@
 import express from "express";
+import {StatusCodes} from "http-status-codes";
 //TODO Call this from server.ts
 /**
  * Import this function from the server script, call it during initialization and provide it with the express application. It will add a piece of middleware which
@@ -15,7 +16,7 @@ export function ensureHttps(app: express.Application): void{
         if(req.secure)
           return next();
         
-        res.redirect(301, `https://${req.hostname}${req.url}`);
+        res.redirect(StatusCodes.MOVED_PERMANENTLY, `https://${req.hostname}${req.url}`);
     
     });
 
