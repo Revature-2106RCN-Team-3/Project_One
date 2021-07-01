@@ -6,6 +6,7 @@
     "lint": "eslint . --ext .ts",
     "start": "node -r module-alias/register ./dist --env=production",
     "start:dev": "nodemon",
+    "taskkill": "taskkill /F /IM node.exe",
     "test:jest": "jest /src/daos/SocialPost --detectOpenHandles --coverage --collectCoverageFrom='./src/daos/SocialPost/**' --coverageDirectory='coverage'",
     "test": "nodemon --config ./spec/nodemon.json",
     "test:no-reloading": "./node_modules/.bin/ts-node -r tsconfig-paths/register ./spec"
