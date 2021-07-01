@@ -1,10 +1,12 @@
+/* eslint-disable max-len */
 import { IMessage } from '@entities/Messages';
 import AWS from 'aws-sdk';
 import logger from '@shared/Logger';
+import deleteInBatch from '../Shared/dynamodb_batch_delete';
 
 //TODO Update Loggers
 
-// Access details stored in env foler under prestart
+// Access details stored in env folder under prestart
 AWS.config.update({
     region: process.env.AWS_DEFAULT_REGION,
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -16,7 +18,6 @@ const dynamoClient =  new AWS.DynamoDB.DocumentClient();
 
 /**
  * identify the name of the table we are using
- * ATM this is going to give an ERROR ON PURPOSE, as I don't know the name of the table
 */
 const TABLE_NAME = 'messages';
 
@@ -25,6 +26,7 @@ export interface IMessageDao {
     getMessages: (messageInfo: IMessage) => Promise<IMessage | null>;
     // Retrieves only top-level messages (letting a user view all their DM groups/chains)
     getGroups: (messageInfo: IMessage) => Promise<IMessage | null>;
+    getAll: () => Promise<IMessage[]>;
     // Potential future implementation; returns a specific message if linked to
     // getLinked: (messageInfo: IMessage) => Promise<iMessage | null>;
     // add or update message based on message_id and current username
@@ -34,6 +36,15 @@ export interface IMessageDao {
 }
 
 class MessagesDao implements IMessageDao {
+
+    public getAll(): Promise<IMessage[]> {
+        logger.info("Using route getAll in DAO");
+        const params = {
+            TableName: TABLE_NAME,
+        };
+        const db = dynamoClient.scan(params).promise();
+        return db.then();
+    }
 
     public getMessages(messageInfo: IMessage): Promise<IMessage | null>{
         logger.info("Using route ```getMessages``` in messages DAO");
@@ -85,18 +96,28 @@ class MessagesDao implements IMessageDao {
         return Promise.resolve(undefined);
     }
 
-
-    public async deleteMessage(messageInfo: IMessage, parentMessageID?: string, messageId?: string): Promise<void> {
+    // Delete will accomplish nothing if neither parentMessageId nor messageId are given
+    public async deleteMessage(messageInfo: IMessage, parentMessageId?: string, messageId?: string): Promise<void> {
         logger.info("Using route ```delete``` in messages DAO");
-         const params = {
-            TableName: TABLE_NAME,
-            Key: {
-                "username": messageInfo.userName,
-                "message_id": messageId,
-            }
-        };
-        await dynamoClient.delete(params).promise();
-        return Promise.resolve(undefined);
+        if (!messageId && parentMessageId) {
+            this.deleteGroup(messageInfo, parentMessageId);
+        } else if (messageId) {
+            const params = {
+                TableName: TABLE_NAME,
+                Key: {
+                    "username": messageInfo.userName,
+                    "message_id": messageId,
+                }
+            };
+            await dynamoClient.delete(params).promise();
+            return Promise.resolve(undefined);
+        }
+    }
+
+    public async deleteGroup(messageInfo: IMessage, parentMessageID: string) {
+        logger.info("Using route ```deleteGroup``` in messages DAO");
+        
+        await deleteInBatch('messages', ['parent_message_id', parentMessageID]);
     }
 
 }
