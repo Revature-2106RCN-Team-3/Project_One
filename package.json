@@ -6,7 +6,7 @@
     "lint": "eslint . --ext .ts",
     "start": "node -r module-alias/register ./dist --env=production",
     "start:dev": "nodemon",
-    "test:jest": "jest --detectOpenHandles --coverage",
+    "test:jest": "jest --detectOpenHandles --coverage --coverageDirectory='coverage'",
     "test": "nodemon --config ./spec/nodemon.json",
     "test:no-reloading": "./node_modules/.bin/ts-node -r tsconfig-paths/register ./spec"
   },
@@ -61,6 +61,7 @@
     "build.ts"
   ],
   "dependencies": {
+    "@babel/preset-flow": "^7.14.5",
     "command-line-args": "^5.1.1",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
@@ -73,6 +74,8 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.14.5",
+    "@jest/types": "^27.0.6",
     "@shelf/jest-dynamodb": "^1.8.1",
     "@types/bcrypt": "^5.0.0",
     "@types/command-line-args": "^5.0.0",

@@ -6,21 +6,29 @@
  * * this module is used to create fake tables that we can call on using jest with dynamodb
  */
 module.exports = {
-    tables: [
-        {
-            TableName: 'Test-Posts',
+    tables: [{
+            TableName: "test-posts",
             KeySchema: [{
-                AttributeName: 'username',
-                KeyType: 'HASH'
-            }],
+                    AttributeName: "username",
+                    KeyType: "HASH"
+                },
+                {
+                    AttributeName: "post_id",
+                    KeyType: "RANGE"
+                }
+            ],
             AttributeDefinitions: [{
-                AttributeName: 'username',
-                AttributeType: 'S'
-            }
+                    AttributeName: "username",
+                    AttributeType: "S"
+                },
+                {
+                    AttributeName: "post_id",
+                    AttributeType: "S"
+                }
             ],
             ProvisionedThroughput: {
                 ReadCapacityUnits: 5,
-                WriteCapacityUnits: 5
+                WriteCapacityUnits: 5,
             },
         },
         {
@@ -37,8 +45,7 @@ module.exports = {
                 ReadCapacityUnits: 5,
                 WriteCapacityUnits: 5
             },
-        },
-        {
+        }, {
             TableName: 'Test-Notifications',
             KeySchema: [{
                 AttributeName: 'username',
@@ -52,8 +59,7 @@ module.exports = {
                 ReadCapacityUnits: 5,
                 WriteCapacityUnits: 5
             },
-        },
-        {
+        }, {
             TableName: 'Test-Users',
             KeySchema: [{
                 AttributeName: 'username',
@@ -67,7 +73,6 @@ module.exports = {
                 ReadCapacityUnits: 5,
                 WriteCapacityUnits: 5
             },
-        },
-        // add more test tables here if needed
+        }
     ],
 };

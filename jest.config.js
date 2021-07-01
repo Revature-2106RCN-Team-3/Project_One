@@ -5,11 +5,24 @@
 
 // jest.config.js
 
-import {defaults} from "jest.config";
+const {defaults} = require('jest-config');
 
-export default {
+module.exports =  {
   // ...
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],
   // ...
-  preset: "@shelf/jest-dynamodb"
+  preset: 
+    // "jest-dynalite",
+    // "@shelf/jest-dynamodb",
+    "ts-jest",
+  
+  testEnvironment: "jest-dynalite/environment",
+  transform: {
+    '^.+\\.tsx?$': 'babel-jest',
+  },
+  setupFilesAfterEnv: [
+    "jest-dynalite/setupTables",
+    // Optional (but recommended)
+    "jest-dynalite/clearAfterEach"
+  ]
 };
