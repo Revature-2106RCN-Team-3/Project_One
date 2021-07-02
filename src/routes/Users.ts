@@ -55,14 +55,15 @@ export async function getAllUsers(req: Request, res: Response) {
  * @returns 
  */
 export async function addOneUser(req: Request, res: Response) {
-    const { user } = req.body;
-    logger.info(user);
-    if (!user) {
+    const { username, first_name, last_name, phone_number, public_name } = req.body;
+    logger.info(req.body);
+    
+    if (!username && !first_name && !last_name && !phone_number && !public_name) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     } else {
-        await userDao.addOrUpdateUser(user);
+        await userDao.addUser(req.body);
         return res.status(CREATED).end();
     }
 }
@@ -79,16 +80,18 @@ export async function addOneUser(req: Request, res: Response) {
  * @returns 
  */
 export async function updateOneUser(req: Request, res: Response) {
-    const { user } = req.body;
+    const { username, first_name, last_name, phone_number, publicName } = req.body;
 
-    if (!user) {
+    if (!username && !first_name && !last_name && !phone_number && !publicName) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    user.username = String(user.username);
-    const userData = await userDao.addOrUpdateUser(user);
-    return res.status(OK).json({userData});
+    
+    if (username === String(username)) {
+        const userData = await userDao.updateUser(req.body);
+        return res.status(OK).json({userData});
+    }
 }
 
 //************************************************************************************************

@@ -35,7 +35,7 @@ describe("User Test 1 - getUser", () => {
       first_name: String("Bruce"),
       last_name: String("Wayne"),
       phone_number: String("546-456-8956"),
-      publicName: String("DarkKnight"),
+      public_name: String("DarkKnight"),
     });
   });
 });
@@ -46,9 +46,9 @@ describe("User Test 2 - getAll", () => {
   })
 })
 
-describe("User Test 3 - addOrUpdate", () => {
-  it('Should add/update a user in the table', async() => {
-    await userDao.addOrUpdateUser(userTest1);
+describe("User Test 3 - addUser", () => {
+  it('Should add a user in the table', async() => {
+    await userDao.addUser(userTest1);
     expect(await userDao.getOne(userTest1.username)).toBeDefined();
   })
 })
