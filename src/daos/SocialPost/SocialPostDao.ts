@@ -1,8 +1,12 @@
+/* eslint-disable max-len */
 import { IPost } from '@entities/SocialPosts';
 import AWS from 'aws-sdk';
 import logger from '@shared/Logger';
 
 //TODO Update Loggers
+/*******************************
+ * 
+ */
 
 // Access details stored in env foler under prestart
 AWS.config.update({
@@ -14,62 +18,57 @@ AWS.config.update({
 // create an instance of AWS
 const dynamoClient =  new AWS.DynamoDB.DocumentClient();
 
-/**
- * identify the name of the table we are using to
- * *this is labeled covid because this is meant to be the start 
- * *   of a massive data structure that could be used to track covid 
- * *   hotspots based on county
-*/
 const TABLE_NAME = "post_and_comments";
 
 /**
  * kept the interface to keep me honest and organized :)
  */
 export interface IPostDao {
-    // gets all post you did
-    getPost: (postInfo: IPost) => Promise<IPost | null>;
-    //!get all comments under each parent post?
-    getComments: (postInfo: IPost) => Promise<IPost | null>;
-    //! gets all post from friends? or just get all post
-    getAll: () => Promise<IPost[]>;
-    // add or update post based on post_id and current username
-    addorUpdatePost: (postInfo: IPost) => Promise<void>;
-    //delete a post based on post_id and current username
-    deletePost: (postInfo: IPost) => Promise<void>
+    getPost: (postInfo: IPost) => Promise<IPost | null>; //*COMPLETED!
+    getComments: (postInfo: IPost) => Promise<IPost | null>;//*COMPLETED!
+    
+    //! gets all post from friends? or just get all post and main post only
+    getAll: () => Promise<IPost[]>;//*COMPLETED! 
+    addMainPost: (postInfo: IPost) => Promise<void>; //TODO add or update post based on post_id and current username
+    deletePost: (postInfo: IPost) => Promise<void> // TODO delete a post based on post_id and current username
 }
 
 class SocialPostDao implements IPostDao {
 
     /** 
+     * * COMPLETED!
      * 
      *  resource used: 
+     // eslint-disable-next-line max-len
      * https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.04.html
+     * https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html
      * 
      * @param postInfo
      * @returns 
      */
-    //TODO create an index to pull all posts if it equals parent post
-    //TODO investigate additional keys needed for query parameters
     public getPost(postInfo: IPost): Promise<IPost | null>{
-        logger.info("Using route ```getPost``` in DAO");
+        logger.info("Using route getPost in DAO");
         const params = {
             TableName: TABLE_NAME,
-            IndexName : 'username-main_post-index',
-            KeyConditionExpression : "#username = :username",
+            FilterExpression : "#username = :username AND #group = #post",
             ExpressionAttributeNames:{
-                "#username": "username"
+                "#username": "username",
+                "#group": "parent_post_id",
+                "#post": "post_id",
             },    
             ExpressionAttributeValues:{
-                ":username": postInfo.userName      
+                ":username": postInfo.userName,
             }
         };
-        const db = dynamoClient.query(params).promise();
+        const db = dynamoClient.scan(params).promise();
         return db.then()
     }
 
     /**
-     * 
+     * *COMPLETED!
      *  
+     * !note: if i need to create an index rather 
+     * !      than use scan  the resource below will assist
      * resource used: 
      * https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.04.html
      *      
@@ -77,28 +76,30 @@ class SocialPostDao implements IPostDao {
      * @returns 
      */
     public getComments(postInfo: IPost): Promise<IPost | null>{
-        logger.info("Using route ```getState``` in DAO");
+        logger.info("Using route getComments in DAO");
         const params = {
             TableName: TABLE_NAME,
-            IndexName : 'username-main_post-index',
-            KeyConditionExpression : "#username = :username",
+            FilterExpression : "#group = :group",
             ExpressionAttributeNames:{
-                "#username": "username"
+                // "#username": "username",
+                "#group": "parent_post_id"
             },    
             ExpressionAttributeValues:{
-                ":username": postInfo.userName      
+                // ":username": postInfo.userName,
+                ":group": postInfo.parentPostId
             }
         };
-        const db =  dynamoClient.query(params).promise();
+        const db =  dynamoClient.scan(params).promise();
         return db.then()
     }
 
     /**
+     * * COMPLETED!
      * this just return everything in the table
      * @returns 
      */
     public getAll(): Promise<IPost[]> {
-        logger.info("Using route ```getAll``` in DAO");
+        logger.info("Using route getAll in DAO");
         const params = {
             TableName: TABLE_NAME,
         };
@@ -107,17 +108,28 @@ class SocialPostDao implements IPostDao {
     }
 
     /**
+     * !new main post only!!
+     * TODO create like/dislike
+     * todo create comment postInfo
+     * 
+     * 
      * * this uses the put function to either create a new item or replace an old item
      * @param
      * @returns 
      */
-    public async addorUpdatePost(stateInfo: IPost): Promise<void> {
-        logger.info("Using route ```addorUpdate``` in DAO");
+    public async addMainPost(postInfo: IPost): Promise<void> {
+        logger.info("Using route addMainPost in DAO");
         const params = {
             TableName: TABLE_NAME,
-            Item: stateInfo,
-            Key: {
-                "fips": stateInfo.fips
+            Item: {
+                username: postInfo.userName,
+                post_id: `${postInfo.userName}*` + String(Date.now()),
+                parent_post_id: `${postInfo.userName}*` + String(Date.now()),
+                post_date_time: String(Date.now()),
+                post_text: postInfo.postText,
+                main_post: 1,
+                // like: postInfo.like,
+                dislikes: postInfo.dislikes
             }
         };
         await dynamoClient.put(params).promise();
@@ -125,17 +137,20 @@ class SocialPostDao implements IPostDao {
     }
 
     /**
-     * takes in fips from the url and attempts to locate and delete the Item
-     * from teh database if it exist
+     * * COMPLETED!
+     * 
+     * deletes individual post_id/comment
+     * 
      * @param fips 
      * @returns 
      */
-    public async deletePost(fips: number): Promise<void> {
+    public async deletePost(postInfo: IPost): Promise<void> {
         logger.info("Using route ```delete``` in DAO");
          const params = {
             TableName: TABLE_NAME,
             Key: {
-                "fips": fips
+                "username": postInfo.userName,
+                "post_id": postInfo.postId
             }
         };
         await dynamoClient.delete(params).promise();
@@ -143,4 +158,4 @@ class SocialPostDao implements IPostDao {
     }
 }
 
-export default StateDao;
+export default SocialPostDao;
