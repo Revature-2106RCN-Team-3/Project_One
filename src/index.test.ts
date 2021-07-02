@@ -1,6 +1,6 @@
 import supertest from "supertest";
 import app from "./Server";
-import {postObj1, postObj2, postObj3} from "./pre-start/testenviroment"
+import {postObj1, postObj2, postObj3} from "./pre-start/testObjects"
 
 //configure basic jest settings
 const DEFAULT_JEST_TIMEOUT = 1000; //milliseconds

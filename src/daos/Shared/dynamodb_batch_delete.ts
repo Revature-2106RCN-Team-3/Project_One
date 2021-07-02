@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import AWS, { AWSError, DynamoDB } from "aws-sdk";
 import { ItemList, ScanInput, ScanOutput } from "aws-sdk/clients/dynamodb";
-import logger from '@shared/Logger';
+import logger from '../../shared/Logger';
 // const {parallelScan} = require('@shelf/dynamodb-parallel-scan');
 // Currently, all primary keys are username, so this works for our purposes.
 //  If any table takes on a different primary key, a new function like getSortKey will have to be added, and code will need updating for the new primary key(s)
