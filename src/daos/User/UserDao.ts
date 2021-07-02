@@ -28,7 +28,7 @@ class UserDao implements IUserDao {
    * @param username
    */
   public getOne(username: string): Promise<IUser | null> {
-    logger.info("Using getOne route in DAO");
+    logger.info("Using getOne route in users DAO");
     const params = {
       TableName: TABLE_NAME,
       Key: {
@@ -43,7 +43,7 @@ class UserDao implements IUserDao {
    *
    */
   public getAll(): Promise<IUser[]> {
-    logger.info("Using getAll route in DAO");
+    logger.info("Using getAll route in users DAO");
     const params = {
       TableName: TABLE_NAME
     };
@@ -56,7 +56,7 @@ class UserDao implements IUserDao {
    * @param user
    */
   public async add(user: IUser): Promise<void> {
-    logger.info("Using add route in DAO");
+    logger.info("Using add route in users DAO");
     const { username, first_name, last_name, phone_number, publicName } = user;
     const params = {
       TableName: TABLE_NAME,
@@ -77,7 +77,7 @@ class UserDao implements IUserDao {
    * @param user
    */
   public async update(user: IUser): Promise<void> {
-    logger.info("Using update route in DAO");
+    logger.info("Using update route in users DAO");
     const params = {
       TableName: TABLE_NAME,
       Item: {
@@ -97,7 +97,7 @@ class UserDao implements IUserDao {
    * @param userName
    */
   public async delete(username:string): Promise<void> {
-    logger.info("Using delete route in DAO");
+    logger.info("Using delete route in users DAO");
     const params = {
       TableName: TABLE_NAME,
       Key: {

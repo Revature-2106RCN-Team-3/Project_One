@@ -38,7 +38,7 @@ export interface IMessageDao {
 class MessagesDao implements IMessageDao {
 
     public getAll(): Promise<IMessage[]> {
-        logger.info("Using route getAll in DAO");
+        logger.info("Using route getAll messages in DAO");
         const params = {
             TableName: TABLE_NAME,
         };
@@ -47,7 +47,7 @@ class MessagesDao implements IMessageDao {
     }
 
     public getMessages(messageInfo: IMessage): Promise<IMessage | null>{
-        logger.info("Using route ```getMessages``` in messages DAO");
+        logger.info("Using route getMessages in messages DAO");
         const params = {
             TableName: TABLE_NAME,
             FilterExpression : "#username = :username AND #group = :group",
@@ -65,7 +65,7 @@ class MessagesDao implements IMessageDao {
     }
 
     public getGroups(messageInfo: IMessage): Promise<IMessage | null>{
-        logger.info("Using route ```getMessages``` in messages DAO");
+        logger.info("Using route getMessages in messages DAO");
         const params = {
             TableName: TABLE_NAME,
             FilterExpression : "#username = :username AND #group = #message",
@@ -83,7 +83,7 @@ class MessagesDao implements IMessageDao {
     }
 
     public async addorUpdateMessage(messageInfo: IMessage): Promise<void> {
-        logger.info("Using route ```addorUpdate``` in messages DAO");
+        logger.info("Using route addorUpdate in messages DAO");
         const params = {
             TableName: TABLE_NAME,
             Item: messageInfo,
@@ -98,7 +98,7 @@ class MessagesDao implements IMessageDao {
 
     // Delete will accomplish nothing if neither parentMessageId nor messageId are given
     public async deleteMessage(messageInfo: IMessage, parentMessageId?: string, messageId?: string): Promise<void> {
-        logger.info("Using route ```delete``` in messages DAO");
+        logger.info("Using route delete in messages DAO");
         if (!messageId && parentMessageId) {
             this.deleteGroup(messageInfo, parentMessageId);
         } else if (messageId) {
@@ -115,7 +115,7 @@ class MessagesDao implements IMessageDao {
     }
 
     public async deleteGroup(messageInfo: IMessage, parentMessageID: string) {
-        logger.info("Using route ```deleteGroup``` in messages DAO");
+        logger.info("Using route deleteGroup in messages DAO");
         
         await deleteInBatch('messages', ['parent_message_id', parentMessageID]);
     }
