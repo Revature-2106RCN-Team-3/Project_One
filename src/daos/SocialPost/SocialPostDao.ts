@@ -66,6 +66,7 @@ class SocialPostDao implements IPostDao {
      */
   public getPost(postInfo: IPost): Promise<IPost | null> {
     logger.info("Using route getPost in DAO");
+    logger.info()
     const params = {
       TableName: TABLE_NAME,
       FilterExpression: "#username = :username AND #group = #post",

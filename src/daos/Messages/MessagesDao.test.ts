@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable max-len */
-// import "../../pre-start/testEnviroment";
+import "../../pre-start/testEnviroment";
 // import {postObj1, postObj2, postObj3} from "../../pre-start/testObjects"
 import Message from "../../entities/Messages";
 import MessagesDao from "./MessagesDao";
