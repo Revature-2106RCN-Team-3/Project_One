@@ -7,5 +7,5 @@ export const userTest1 = {
     first_name: String("Bruce"),
     last_name: String("Wayne"),
     phone_number: String("546-456-8956"),
-    publicName: String("DarkKnight"),
+    public_name: String("DarkKnight"),
 }

@@ -5,7 +5,7 @@ export interface IUser {
   first_name?: string;
   last_name?: string;
   phone_number?:string;
-  publicName?: string; // this is their public facing names
+  public_name?: string; // this is their public facing names
 //  userNameHash: string;
 }
 
@@ -14,7 +14,7 @@ class User implements IUser {
   public first_name: string;
   public last_name: string;
   public phone_number: string;
-  public publicName: string;
+  public public_name: string;
 //  public userNameHash: string;
 
   constructor(
@@ -23,13 +23,13 @@ class User implements IUser {
     first_name?: string, 
     last_name?: string,
     phone_number?: string, 
-    publicName?: string
+    public_name?: string
     ) {
     this.username = username;
     this.first_name = first_name || "";
     this.last_name = last_name || "";
     this.phone_number = phone_number || "";
-    this.publicName = publicName || "";
+    this.public_name = public_name || "";
 //    this.userNameHash = userNameHash ||  String(this.updatePassTest(username));
   }
 
