@@ -53,7 +53,7 @@ export async function updateMessage(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    const msg = await messageDao.getGroups(messages);
+    const msg = await messageDao.addorUpdateMessage(messages);
     return res.status(OK).json({msg});
 }
 
