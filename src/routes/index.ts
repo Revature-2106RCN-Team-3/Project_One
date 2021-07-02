@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable max-len */
 import { Router } from 'express';
-// import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
+import { getAllUsers, getOneUser, addOneUser, updateOneUser, deleteOneUser } from './Users';
 import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts, getComments } from './SocialPosts';
 // import { getMessages, newMessageGroup, newMessage, updateMessage, deleteMessageGroup, deleteMessageGroup } from './Messages';
 
@@ -14,11 +14,12 @@ import { getAllPosts, addorUpdatePost, deleteOnePost, getMainPosts, getComments 
 // loginRouter.delete('/delete/:id', deleteOneUser);
 
 // // User-route
-// const userRouter = Router();
-// userRouter.get('/all', getAllUsers);
-// userRouter.post('/add', addOneUser);
-// userRouter.put('/update', updateOneUser);
-// userRouter.delete('/delete/:id', deleteOneUser);
+const userRouter = Router();
+userRouter.get('/all', getAllUsers);
+userRouter.get('/all/:username', getOneUser);
+userRouter.post('/add', addOneUser);
+userRouter.put('/update', updateOneUser);
+userRouter.delete('/delete/:username', deleteOneUser);
 
 // Post-route
 const postRouter = Router();
@@ -41,5 +42,6 @@ postRouter.delete('/post/delete/:username', deleteOnePost);
 
 // Export the base-router
 const baseRouter = Router();
-baseRouter.use('/home', postRouter);
+baseRouter.use('/home', userRouter);
 export default baseRouter;
+

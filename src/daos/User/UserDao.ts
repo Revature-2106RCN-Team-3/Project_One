@@ -1,33 +1,44 @@
-import { IUser } from "@entities/User";
-import logger from '@shared/Logger';
+import { IUser } from "../../entities/User";
+import logger from '../../shared/Logger';
 import AWS from 'aws-sdk';
 
+// Access details stored in the env folder for the database
 AWS.config.update({
   region: process.env.AWS_DEFAULT_REGION,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 })
 
+//constants for an instance of DocClient and table being accessed in database
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = "profile"
+
 export interface IUserDao {
   getOne: (username: string) => Promise<IUser | null>;
-  getAll: () => Promise<IUser[]>;
-  add: (user: IUser) => Promise<void>;
-  update: (user: IUser) => Promise<void>;
+  getAll: (user: IUser) => Promise<IUser[]>;
+  addOrUpdateUser: (user: IUser) => Promise<void>;
   delete: (username: string) => Promise<void>;
 }
 
 class UserDao implements IUserDao {
   /**
+   * References:
+   *  https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.04.html
+   *  https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html
+   * 
+   * Returns a user by the username
    * @param username
    */
   public getOne(username: string): Promise<IUser | null> {
     logger.info("Using getOne route in DAO");
     const params = {
       TableName: TABLE_NAME,
-      Key: {
-        "username": username
+      KeyConditionExpression: "#username = :username",
+      ExpressionAttributeNames:{
+        "#username": "username"
+      },
+      ExpressionAttributeValues: {
+        ":username": username,
       }
     }
     const db = dynamoClient.query(params).promise();
@@ -35,7 +46,8 @@ class UserDao implements IUserDao {
   }
 
   /**
-   *
+   * Returns all users in the table
+   * @returns
    */
   public getAll(): Promise<IUser[]> {
     logger.info("Using getAll route in DAO");
@@ -47,48 +59,25 @@ class UserDao implements IUserDao {
   }
 
   /**
-   *
+   * Adds/Updates a user's information
    * @param user
    */
-  public async add(user: IUser): Promise<void> {
-    logger.info("Using add route in DAO");
-    const { username, first_name, last_name, phone_number, publicName } = user;
+  public async addOrUpdateUser(user: IUser): Promise<void> {
+    logger.info("Using add/update route in DAO");
     const params = {
       TableName: TABLE_NAME,
-      Item: {
-        username:{S: username},
-        first_name:{S: first_name},
-        last_name:{S: last_name},
-        phone_number:{S: phone_number},
-        public_name:{S: publicName}
+      Item: user,
+      Key: {
+        "username": user.username
       }
     }
-    await dynamoClient.put(params).promise();
-    return Promise.resolve(undefined);
-  }
 
-    /**
-   *
-   * @param user
-   */
-  public async update(user: IUser): Promise<void> {
-    logger.info("Using update route in DAO");
-    const params = {
-      TableName: TABLE_NAME,
-      Item: {
-        username:{S: user.username},
-        first_name:{S: user.first_name},
-        last_name:{S: user.last_name},
-        phone_number:{S: user.phone_number},
-        public_name:{S: user.publicName}
-      }
-    }
     await dynamoClient.put(params).promise();
     return Promise.resolve(undefined);
   }
 
   /**
-   *
+   * Deletes a user by the username
    * @param userName
    */
   public async delete(username:string): Promise<void> {
