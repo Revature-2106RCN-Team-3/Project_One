@@ -7,7 +7,30 @@ import logger from '../../shared/Logger';
 //  If any table takes on a different primary key, a new function like getSortKey will have to be added, and code will need updating for the new primary key(s)
 const PRIMARY_KEY = 'username';
 
-const dynamoClient =  new AWS.DynamoDB.DocumentClient();
+let config;
+let dynamoClient: any;
+
+if (process.env.NODE_ENV === "test") {
+    config = {
+      convertEmptyValues: true,
+      ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+        sslEnabled: false,
+        region: "local",
+      }),
+    };
+    // create an instance of AWS
+    dynamoClient = new AWS.DynamoDB.DocumentClient(config);
+  } else {
+    // Access details stored in env foler under prestart
+    AWS.config.update({
+      region: process.env.AWS_DEFAULT_REGION,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+    // create an instance of AWS
+    dynamoClient = new AWS.DynamoDB.DocumentClient();
+  }
 
 // Procures the sort key based on the input tablename. Added for simplicity's sake; must be updated if tables are modified
 function getSortKey(tableName: string){
@@ -130,13 +153,10 @@ function sliceInChunks(arr: any) {
 
 // Sends up to 10 consecutive delete operations of 25 items at a time.
 async function deleteItems(tableName: string, chunks: any, dynamo?: AWS.DynamoDB.DocumentClient) {
-  const defaultClient = new AWS.DynamoDB.DocumentClient();
-  let client: AWS.DynamoDB.DocumentClient;
-  if (dynamo) {client = dynamo} else {client = defaultClient};
 
   const promises = chunks.map(async function(chunk: any) {
     const params = {RequestItems: {[tableName]: chunk}};
-    const res = await client.batchWrite(params).promise();
+    const res = await dynamoClient.batchWrite(params).promise();
     return res;
   });
 
@@ -149,7 +169,7 @@ async function deleteItems(tableName: string, chunks: any, dynamo?: AWS.DynamoDB
  * Beware though: if the optional filter is not supplied, IT WILL BE TREATED AS A DELETE ALL
  * eg: deleteInBatch('messages', ['parent_id', '130201']);
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-export default async function deleteInBatch(tableName: string, filter?: [string, string], dynamo?: AWS.DynamoDB.DocumentClient) {
+export default async function deleteInBatch(tableName: string, filter?: [string, string]) {
   logger.info("getsortkey");
   const sortKey = getSortKey(tableName);
   logger.info("prepareScanParams");
@@ -161,7 +181,7 @@ export default async function deleteInBatch(tableName: string, filter?: [string,
   logger.info("sliceInChunks");
   const chunks = sliceInChunks(params);
   logger.info("deleteItems");
-  const res = await deleteItems(tableName, chunks, dynamo);
+  const res = await deleteItems(tableName, chunks);
   logger.info("stringify");
   console.log(JSON.stringify(res));
 }
