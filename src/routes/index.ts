@@ -5,7 +5,7 @@ import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
 import { getAllPosts, deleteOnePost, getMainPosts, getComments, addComment, addMainPost, updateOnePost, addLikeDislike } from './SocialPosts';
 // import { getMessages, newMessageGroup, newMessage, updateMessage, deleteMessageGroup, deleteMessageGroup } from './Messages';
 
-// // Login-route
+// Login-route
 // //TODO invistigate necessity of this route
 // const loginRouter = Router();
 // loginRouter.get('/all', getAllUsers);
@@ -41,7 +41,7 @@ postRouter.delete('/post/delete', deleteOnePost);
 //* Messages-routes
 //************************************************************************************************
 const messagesRouter = Router();
-// messagesRouter.get('/messages/all', getMessages); // shows all your message groups
+messagesRouter.get('/messages/all', getMessages); // shows all your message groups
 // messagesRouter.post('/messages/new/groupmessage', newMessageGroup); // creates a new direct message
 // messagesRouter.post('/messages/new/:parentMessageId/', newMessage) // direct message from within existing direct message
 // messagesRouter.put('/messages/update', updateMessage); // update message from within existing direct message

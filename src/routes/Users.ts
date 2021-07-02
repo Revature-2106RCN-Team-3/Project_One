@@ -2,7 +2,7 @@ import StatusCodes from 'http-status-codes';
 import { Request, Response } from 'express';
 
 import UserDao from '../daos/User/UserDao';
-import { paramMissingError } from '@shared/constants';
+import { paramMissingError } from '../shared/constants';
 import User from '../entities/User';
 
 const userDao = new UserDao();

@@ -2,9 +2,9 @@
 import StatusCodes from 'http-status-codes';
 import { Request, Response } from 'express';
 
-import MessagesDao from '@daos/Messages/MessagesDao';
-import { paramMissingError } from '@shared/constants';
-import Message from '@entities/Messages';
+import MessagesDao from '../daos/Messages/MessagesDao';
+import { paramMissingError } from '../shared/constants';
+import Message from '../entities/Messages';
 
 const messageDao = new MessagesDao();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;

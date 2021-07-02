@@ -1,21 +1,35 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable max-len */
-import { IPost } from "@entities/SocialPosts";
+import { IPost } from "../../entities/SocialPosts";
 import AWS from "aws-sdk";
 import logger from "../../shared/Logger";
 import { createHash } from "../../shared/functions";
 
+let config;
+let dynamoClient: any;
 
-// Access details stored in env foler under prestart
-AWS.config.update({
-  region: process.env.AWS_DEFAULT_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-
-
-logger.info(AWS.config.region);
-// create an instance of AWS
-const dynamoClient = new AWS.DynamoDB.DocumentClient();
+  if (process.env.NODE_ENV === "test") {
+    config = {
+      convertEmptyValues: true,
+      ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+        sslEnabled: false,
+        region: "local",
+      }),
+    };
+    // create an instance of AWS
+    dynamoClient = new AWS.DynamoDB.DocumentClient(config);
+  } else {
+    // Access details stored in env foler under prestart
+    AWS.config.update({
+      region: process.env.AWS_DEFAULT_REGION,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+    // create an instance of AWS
+    dynamoClient = new AWS.DynamoDB.DocumentClient();
+  }
 
 // create const for table name
 const TABLE_NAME = "post_and_comments";
@@ -146,7 +160,7 @@ class SocialPostDao implements IPostDao {
    * @returns
    */
   public async addComment(postInfo: IPost): Promise<void> {
-    logger.info("Using route addMainPost in DAO");
+    logger.info("Using route addComment in DAO");
     const id = await createHash(postInfo.userName + String(Date.now()));
     const params = {
       TableName: TABLE_NAME,
@@ -196,9 +210,9 @@ class SocialPostDao implements IPostDao {
   }
 
   /** COMPLETED!
-   * 
-   * @param postInfo 
-   * @returns 
+   *
+   * @param postInfo
+   * @returns
    */
   public async addLikeDislike(postInfo: IPost): Promise<void> {
     logger.info("Using route addLikeDislike in DAO");
