@@ -1,121 +1,81 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-// import { DocumentClient } from "aws-sdk/clients/dynamodb";
-const { DocumentClient} = require("aws-sdk/clients/dynamodb");
-const {SocialPostDao} = require("./SocialPostDao");
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable max-len */
+import "../../pre-start/testEnviroment";
+import {postObj1, postObj2, postObj3} from "../../pre-start/testObjects"
+import SocialPostDao from "./SocialPostDao";
 
-const isTest = process.env.MOCK_DYNAMODB_ENDPOINT;
-const config = {
-  convertEmptyValues: true,
-  ...(isTest && {
-    endpoint: "localhost:8000",
-    sslEnabled: false,
-    region: "local",
-  }),
-};
+//configure basic jest settings
+const DEFAULT_JEST_TIMEOUT = 1000; //milliseconds
+jest.setTimeout(1 * DEFAULT_JEST_TIMEOUT);
 
-// const client = new DynamoDB({
-//     config = ({
-//           convertEmptyValues: true,
-//     }),
-//     ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-//       endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-//       sslEnabled: false,
-//       region: "local",
-//     })
-// })
-
-
+// create instance of social post dao
 const dao = new SocialPostDao();
-const ddb = new DocumentClient(config);
-const TABLE_NAME = "test-posts";
 
-const postObj1 = {
-  userName: String("matthewterry68.mt@gmail.com"),
-  postId: String(
-    "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW"
-  ),
-  postText: String("aghhhhhh this is post text!!"),
-  parentPostId: String(
-    "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW"
-  ),
-  like: Boolean(true),
-  dislikes: Boolean(false),
-  mainPost: Number(1),
-};
-
-// describe("getPost", () => {
-  it("This should pull a Main Post", async () => {
-    expect(await dao.getPost(postObj1)).toEqual({
-      userName: String("matthewterry68.mt@gmail.com"),
-      postId: String(
-        "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW"
-      ),
-      postText: String("aghhhhhh this is post text!!"),
-      parentPostId: String(
-        "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW"
-      ),
-      like: Boolean(true),
-      dislikes: Boolean(false),
-      mainPost: Number(1),
-    });
-  });
-
-//   it("should handle no value for key", async () => {
-//     expect(await keystore.getItem("a")).toBeUndefined();
-//   });
-
-//   it("should contain the existing key from example data", async () => {
-//     expect(await keystore.getItem("50")).toEqual({ name: "already exists" });
-//   });
-// });
+//************************************************************************************************
+//* tests start here
+//************************************************************************************************
 
 /**
  * resource used:
  * https://jestjs.io/docs/dynamodb
  */
-it("Should insert one item into table", async () => {
-  await ddb
-    .put({
-      TableName: TABLE_NAME,
-      Item: {
-        main_post: 1,
-        parent_post_id:
-          "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-        post_date_time: "1625090060153",
-        post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-        post_text: "this is a comment my dudes",
-        username: "matthewterry68.mt@gmail.com",
-      },
-    })
-    .promise();
-
-  const { Item } = await ddb
-    .get({
-      TableName: TABLE_NAME,
-      Key: { 
-        username: "matthewterry68.mt@gmail.com",
-        post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG"},
-    })
-    .promise();
-
-  return expect(Item).toEqual({
-    main_post: 1,
-    parent_post_id:
-      "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-    post_date_time: "1625090060153",
-    post_id: "$2b$10$0gSNQsKoyfkzMS83jGcOHOAyIb/JGUZy635QCYxndL.oKI9jdMgVG",
-    post_text: "this is a comment my dudes",
-    username: "matthewterry68.mt@gmail.com",
+describe("[SOCIAL_POST_DAO][Test 1.0] - addComment and getComments", () => {
+  it("Should enter then read items from the table", async () => {
+    await dao.addComment(postObj1);
+    expect(await dao.getComments(postObj1)).toBeDefined();
   });
 });
 
-// it("Should delete one item from table", async () => {
-//   await ddb.delete({ TableName: TABLE_NAME, Key: { fips: 1 } }).promise();
+describe("[SOCIAL_POST_DAO][Test 2.0] - addMainPost and getPost", () => {
+  it("Should enter then read items from the table", async () => {
+    await dao.addMainPost(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
+});
 
-//   const { Item } = await ddb
-//     .get({ TableName: TABLE_NAME, Key: { fips: 1 } })
-//     .promise();
+describe("[SOCIAL_POST_DAO][Test 3.0] - getAll", () => {
+  it("Should read all items in the table", async () => {
+    expect(await dao.getAll()).toBeDefined();
+  });
+});
 
-//   return expect(Item).withContext;
-// });
+describe("[SOCIAL_POST_DAO][Test 4.0] - updateComment", () => {
+  it("Should enter then read items from the table", async () => {
+    await dao.updateComment(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
+});
+
+describe("[SOCIAL_POST_DAO][Test 4.1] - updateComment", () => {
+  it("Should enter then read items from the table", async () => {
+    await dao.updateComment(postObj2);
+    expect(await dao.getPost(postObj2)).toBeDefined();
+  });
+});
+
+describe("[SOCIAL_POST_DAO][Test 5.0] - addLikeDislike", () => {
+  it("Should enter then read items from the table", async () => {
+    await dao.addLikeDislike(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
+});
+describe("[SOCIAL_POST_DAO][Test 5.1] - addLikeDislike", () => {
+  it("Should enter then read items from the table", async () => {
+    await dao.addLikeDislike(postObj2);
+    expect(await dao.getPost(postObj2)).toBeDefined();
+  });
+});
+describe("[SOCIAL_POST_DAO][Test 5.2] - addLikeDislike", () => {
+  it("Should enter then read items from the table", async () => {
+    await dao.addLikeDislike(postObj3);
+    expect(await dao.getPost(postObj3)).toBeDefined();
+  });
+});
+
+describe("[SOCIAL_POST_DAO][Test 6.0] - deletePost", () => {
+  it("Should delete then read items from table", async () => {
+    await dao.deletePost(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
+});

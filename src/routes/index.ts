@@ -3,9 +3,9 @@
 import { Router } from 'express';
 import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
 import { getAllPosts, deleteOnePost, getMainPosts, getComments, addComment, addMainPost, updateOnePost, addLikeDislike } from './SocialPosts';
-import { getAll, getMessages, getMessageGroups, updateMessage, deleteMessage } from './Messages';
+import { getMessages, getMessageGroups , deleteMessage, updateMessage} from './Messages';
 
-// // Login-route
+// Login-route
 // //TODO invistigate necessity of this route
 // const loginRouter = Router();
 // loginRouter.get('/all', getAllUsers);
@@ -21,7 +21,7 @@ const userRouter = Router();
 userRouter.get('/all', getAllUsers);
 userRouter.post('/add', addOneUser);
 userRouter.put('/update', updateOneUser);
-userRouter.delete('/delete/:id', deleteOneUser);
+userRouter.delete('/delete/:username', deleteOneUser);
 
 //************************************************************************************************
 //* Post-routes
@@ -41,11 +41,9 @@ postRouter.delete('/post/delete', deleteOnePost);
 //* Messages-routes
 //************************************************************************************************
 const messagesRouter = Router();
-messagesRouter.get('/messages/:parentMessageId', getMessages); // shows all your message groups
-messagesRouter.get('/messages/', getAll);
-// messagesRouter.post('/messages/new/groupmessage', newMessageGroup); // creates a new direct message
-// messagesRouter.post('/messages/new/:parentMessageId/', newMessage) // direct message from within existing direct message
-// messagesRouter.put('/messages/update', updateMessage); // update message from within existing direct message
+messagesRouter.get('/messages/all', getMessages); // shows all your message groups
+messagesRouter.get('/messages/getgroups', getMessageGroups);
+messagesRouter.put('/messages/update', updateMessage); // update message from within existing direct message
 messagesRouter.delete('/messages/delete/:parentMessageId', deleteMessage); // deletes direct message group
 messagesRouter.delete('/messages/delete/:parentMessageId/:messageId', deleteMessage); // deletes direct message group
 

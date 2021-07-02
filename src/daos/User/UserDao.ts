@@ -1,5 +1,5 @@
-import { IUser } from "@entities/User";
-import logger from '@shared/Logger';
+import { IUser } from "../../entities/User";
+import logger from '../../shared/Logger';
 import AWS from 'aws-sdk';
 
 AWS.config.update({
@@ -19,6 +19,11 @@ export interface IUserDao {
 }
 
 class UserDao implements IUserDao {
+  
+  //************************************************************************************************
+  //* Get Operators
+  //************************************************************************************************
+  
   /**
    * @param username
    */
