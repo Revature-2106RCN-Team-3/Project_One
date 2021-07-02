@@ -3,7 +3,7 @@ import http from "http";
 import https from "https";
 import fs from "fs";
 import app from '@server';
-import logger from '@shared/Logger';
+import logger from './shared/Logger';
 
 
 // Start the server

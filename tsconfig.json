@@ -83,7 +83,7 @@
   "include": [
     "src/**/*.ts",
     "spec/**/*.ts"
-  ],
+, "src/daos/SocialPost/SocialPostDao.test.old"  ],
   "exclude": [
     "src/public/"
   ]

@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { IMessage } from '@entities/Messages';
 import AWS from 'aws-sdk';
-import logger from '@shared/Logger';
+import logger from '../../shared/Logger';
 import deleteInBatch from '../Shared/dynamodb_batch_delete';
 
 //TODO Update Loggers

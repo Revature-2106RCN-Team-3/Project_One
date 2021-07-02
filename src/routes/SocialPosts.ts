@@ -1,8 +1,8 @@
 import StatusCodes from 'http-status-codes';
 import { Request, Response } from 'express';
-import logger from '@shared/Logger';
-import SocialPostDao from '@daos/SocialPost/SocialPostDao';
-import { paramMissingError } from '@shared/constants';
+import logger from '../shared/Logger';
+import SocialPostDao from '../daos/SocialPost/SocialPostDao';
+import { paramMissingError } from '../shared/constants';
 
 const socialPostDao = new SocialPostDao();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
