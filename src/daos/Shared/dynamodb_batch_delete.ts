@@ -49,7 +49,7 @@ function getSortKey(tableName: string){
 }
 
 // Takes in expressions in the form of tuples; eg. ['message_parent_id', '10200405']
-function prepareScanParams(tableName: string, sortKey?: string, expressions?: [string, string]) {
+function prepareScanParams(tableName: string, sortKey?: string, expressions?: Array<Array<string>>) {
   // Aliases are used by the computed properties, and by ExpressionAttributeNames
     const keyAlias = `#${PRIMARY_KEY}`;
     // This must be of type: ScanInput because typescript is persnickety. Secondary is any just in case a delete all is desired.
@@ -103,7 +103,7 @@ function prepareScanParams(tableName: string, sortKey?: string, expressions?: [s
 
 // Performs the scan, retrieving up to 250 items at once.
 async function fetchScan(params: ScanInput) {
-  const CONCURRENCY = 250;
+  // const CONCURRENCY = 250;
   // const items = await parallelScan(params, {concurrency: CONCURRENCY});
   const items = await dynamoClient.scan(params).promise();
   return items.Items;
@@ -167,9 +167,9 @@ async function deleteItems(tableName: string, chunks: any, dynamo?: AWS.DynamoDB
  * Use of deleteInBatch is intended to be very simple. Just table name, sort column, and filter value
  * All filter values, names, keys, etc are passed through placeholders, so even protected values can be used
  * Beware though: if the optional filter is not supplied, IT WILL BE TREATED AS A DELETE ALL
- * eg: deleteInBatch('messages', ['parent_id', '130201']);
+ * eg: deleteInBatch('messages', ['parent_message_id', '130201'], ['username', 'Jimmy']);
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-export default async function deleteInBatch(tableName: string, filter?: [string, string]) {
+export default async function deleteInBatch(tableName: string, ...filter: Array<Array<string>>) {
   logger.info("getsortkey");
   const sortKey = getSortKey(tableName);
   logger.info("prepareScanParams");
