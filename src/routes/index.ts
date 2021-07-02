@@ -5,15 +5,6 @@ import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
 import { getAllPosts, deleteOnePost, getMainPosts, getComments, addComment, addMainPost, updateOnePost, addLikeDislike } from './SocialPosts';
 import { getMessages, getMessageGroups , deleteMessage, updateMessage} from './Messages';
 
-// Login-route
-// //TODO invistigate necessity of this route
-// const loginRouter = Router();
-// loginRouter.get('/all', getAllUsers);
-// loginRouter.post('/add', addOneUser);
-// loginRouter.put('/update', updateOneUser);
-// loginRouter.delete('/delete/:id', deleteOneUser);
-
-
 //************************************************************************************************
 //* User-routes
 //************************************************************************************************
@@ -35,7 +26,6 @@ postRouter.post('/post/addcomment', addComment);
 postRouter.post('/post/addvibe', addLikeDislike)
 postRouter.put('/post/update', updateOnePost);
 postRouter.delete('/post/delete', deleteOnePost);
-
 
 //************************************************************************************************
 //* Messages-routes
