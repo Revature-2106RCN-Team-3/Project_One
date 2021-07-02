@@ -16,7 +16,8 @@ const TABLE_NAME = "profile"
 export interface IUserDao {
   getOne: (username: string) => Promise<IUser | null>;
   getAll: (user: IUser) => Promise<IUser[]>;
-  addOrUpdateUser: (user: IUser) => Promise<void>;
+  addUser: (user: IUser) => Promise<void>;
+  updateUser: (user: IUser) => Promise<void>;
   delete: (username: string) => Promise<void>;
 }
 
@@ -59,10 +60,33 @@ class UserDao implements IUserDao {
   }
 
   /**
+   * Adds a user's information
+   * @param user
+   */
+   public async addUser(user: IUser): Promise<void> {
+    logger.info("Using add route in DAO");
+    const { username, first_name, last_name, phone_number, public_name } = user;
+    const params = {
+      TableName: TABLE_NAME,
+      Item: {
+        username: username,
+        first_name: first_name,
+        last_name: last_name,
+        phone_number: phone_number,
+        public_name: public_name,
+      }
+    }
+
+    await dynamoClient.put(params).promise();
+    return Promise.resolve(undefined);
+  }
+
+
+  /**
    * Adds/Updates a user's information
    * @param user
    */
-  public async addOrUpdateUser(user: IUser): Promise<void> {
+  public async updateUser(user: IUser): Promise<void> {
     logger.info("Using add/update route in DAO");
     const params = {
       TableName: TABLE_NAME,
