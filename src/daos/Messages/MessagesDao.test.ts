@@ -22,16 +22,16 @@ const dao = new MessagesDao();
  * https://jestjs.io/docs/dynamodb
  */
 
-describe("Should insert and update a single message", () => {
+describe("[MESSAGES_DAO]", () => {
   const testMessage = new Message("Jimmy", "null", "Jimothy");
-  it("Should not error when uploading data", async () => {
+  it("[Test 1.0] - addComment and getComments", async () => {
     await dao.addorUpdateMessage(testMessage);
   });
-  it("Should be able to find something on the database", async () => {
+  it("[Test 2.0] - addComment and getComments", async () => {
     await dao.addorUpdateMessage(testMessage);
     const res = await dao.getAll();
   })
-  it("Should be able to recover uploaded message", async () => {
+  it("[Test 3.0] - addComment and getComments", async () => {
     await dao.addorUpdateMessage(testMessage);
     const res = await dao.getGroups(testMessage);
     console.log(res);

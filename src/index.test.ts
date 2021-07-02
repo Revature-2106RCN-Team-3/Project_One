@@ -97,6 +97,22 @@ describe("[ROUTES TEST]- POST OPERATORS", () => {
     const res = await supertest(app).post("/api/home/post/addvibe").send();
     expect(res.statusCode).toEqual(400);
   });
+
+  it("[Test 4.0] - Add User", async () => {
+    const res = await supertest(app)
+      .post("/api/home/add")
+      .send(usersBody1);
+    expect(res.statusCode).toEqual(201);
+  });
+
+  it("[Test 4.1] - Add User failure", async () => {
+    const res = await supertest(app)
+      .post("/api/home/add")
+      .send();
+    expect(res.statusCode).toEqual(400);
+  });
+
+
 });
 //************************************************************************************************
 //* Put Operators

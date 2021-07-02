@@ -66,15 +66,15 @@ export const msgBody1 = {
 
 // json formatted post body to pass through routes
 export const postBody1 = {
-  socialPosts: {
-    userName: "matthewterry68.mt@gmail.com",
-    postId: "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW",
-    postText: "aghhhhhh this is post text!!",
-    parentPostId:
+  "socialPosts": {
+    "userName": "matthewterry68.mt@gmail.com",
+    "postId": "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW",
+    "postText": "aghhhhhh this is post text!!",
+    "parentPostId":
       "$2b$10$tU7mWLVWToPSeN9e/uKSR.Kjn5LiX1WfAyQdbT1sevF7EpN7gzwWW",
-    like: true,
-    dislikes: false,
-    mainPost: 1,
+    "like": true,
+    "dislikes": false,
+    "mainPost": 1,
   },
 };
 

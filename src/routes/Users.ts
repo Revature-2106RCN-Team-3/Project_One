@@ -2,7 +2,6 @@ import StatusCodes from 'http-status-codes';
 import { Request, Response } from 'express';
 import UserDao from '../daos/User/UserDao';
 import { paramMissingError } from '../shared/constants';
-import User from '../entities/User';
 
 const userDao = new UserDao();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
@@ -35,14 +34,12 @@ export async function getAllUsers(req: Request, res: Response) {
  */
  export async function getOneUser(req: Request, res: Response) {
     const { username } = req.params;
-
-    const userData = await userDao.getOne(username);
-    
     if(!username) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     } else {
+        const userData = await userDao.getOne(username);
         return res.status(OK).json(userData);
     }
 }
@@ -56,7 +53,6 @@ export async function getAllUsers(req: Request, res: Response) {
  */
 export async function addOneUser(req: Request, res: Response) {
     const { user } = req.body;
-    logger.info(user);
     if (!user) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
@@ -80,7 +76,6 @@ export async function addOneUser(req: Request, res: Response) {
  */
 export async function updateOneUser(req: Request, res: Response) {
     const { user } = req.body;
-
     if (!user) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
@@ -104,7 +99,6 @@ export async function updateOneUser(req: Request, res: Response) {
  */
 export async function deleteOneUser(req: Request, res: Response) {
     const { username } = req.params;
-
     if(!username) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
