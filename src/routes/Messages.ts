@@ -1,14 +1,17 @@
 
 import StatusCodes from 'http-status-codes';
 import { Request, Response } from 'express';
-import logger from '@shared/Logger';
-import MessagesDao from '@daos/Messages/MessagesDao';
-import { paramMissingError } from '@shared/constants';
-import Message from '@entities/Messages';
+import logger from '../shared/Logger';
+import MessagesDao from '../daos/Messages/MessagesDao';
+import { paramMissingError } from '../shared/constants';
+import Message from '../entities/Messages';
 
 const messageDao = new MessagesDao();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
+//************************************************************************************************
+//* get operators
+//************************************************************************************************
 
 export async function getAll(req: Request, res: Response) {
     const msg = await messageDao.getAll();
@@ -39,6 +42,10 @@ export async function getMessageGroups(req: Request, res: Response) {
     return res.status(OK).json({msg});
 }
 
+//************************************************************************************************
+//* Put Operators
+//************************************************************************************************
+
 export async function updateMessage(req: Request, res: Response) {
     const { messages } = req.body;
     if (!messages) {
@@ -49,6 +56,10 @@ export async function updateMessage(req: Request, res: Response) {
     const msg = await messageDao.getGroups(messages);
     return res.status(OK).json({msg});
 }
+
+//************************************************************************************************
+//* Delete Operators
+//************************************************************************************************
 
 export async function deleteMessage(req: Request, res: Response) {
     const { messages } = req.body;

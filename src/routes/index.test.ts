@@ -59,6 +59,6 @@ const postObj3 = {
 
 // Test Social Post Endpoint
 it("get all posts", async () => {
-  const res = await supertest(app).get("api/home/post").send();
+  const res = await supertest(baseRouter).get("/home/post").send();
   expect(res.statusCode).toEqual(302);
 });

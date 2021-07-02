@@ -8,7 +8,9 @@ import User from '../entities/User';
 const userDao = new UserDao();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
-
+//************************************************************************************************
+//* Get Operators
+//************************************************************************************************
 
 /**
  * Get all users.
@@ -22,6 +24,9 @@ export async function getAllUsers(req: Request, res: Response) {
     return res.status(OK).json({users});
 }
 
+//************************************************************************************************
+//* Post Operators
+//************************************************************************************************
 
 /**
  * Add one user.
@@ -50,6 +55,9 @@ export async function addOneUser(req: Request, res: Response) {
     return res.status(CREATED).end();
 }
 
+//************************************************************************************************
+//* Put Operators
+//************************************************************************************************
 
 /**
  * Update one user.
@@ -79,6 +87,9 @@ export async function updateOneUser(req: Request, res: Response) {
     return res.status(OK).end();
 }
 
+//************************************************************************************************
+//* Delete Operators
+//************************************************************************************************
 
 /**
  * Delete one user.
