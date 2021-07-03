@@ -8,7 +8,6 @@ import { createHash } from "../../shared/functions";
 
 let config;
 let dynamoClient: any;
-
   if (process.env.NODE_ENV === "test") {
     config = {
       convertEmptyValues: true,
@@ -66,7 +65,6 @@ class SocialPostDao implements IPostDao {
      */
   public getPost(postInfo: IPost): Promise<IPost | null> {
     logger.info("Using route getPost in DAO");
-    logger.info()
     const params = {
       TableName: TABLE_NAME,
       FilterExpression: "#username = :username AND #group = #post",
@@ -100,11 +98,9 @@ class SocialPostDao implements IPostDao {
       TableName: TABLE_NAME,
       FilterExpression: "#group = :group",
       ExpressionAttributeNames: {
-        // "#username": "username",
         "#group": "parent_post_id",
       },
       ExpressionAttributeValues: {
-        // ":username": postInfo.userName,
         ":group": postInfo.parentPostId,
       },
     };
@@ -262,8 +258,8 @@ class SocialPostDao implements IPostDao {
     const params = {
       TableName: TABLE_NAME,
       Key: {
-        username: postInfo.userName,
-        post_id: postInfo.postId,
+        "username": postInfo.userName,
+        "post_id": postInfo.postId,
       },
     };
     await dynamoClient.delete(params).promise();

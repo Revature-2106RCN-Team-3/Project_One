@@ -1,104 +1,104 @@
 /* eslint-disable max-len */
 import AWS, { AWSError, DynamoDB } from "aws-sdk";
 import { ItemList, ScanInput, ScanOutput } from "aws-sdk/clients/dynamodb";
-import logger from '../../shared/Logger';
+import logger from "../../shared/Logger";
 // const {parallelScan} = require('@shelf/dynamodb-parallel-scan');
 // Currently, all primary keys are username, so this works for our purposes.
 //  If any table takes on a different primary key, a new function like getSortKey will have to be added, and code will need updating for the new primary key(s)
-const PRIMARY_KEY = 'username';
+const PRIMARY_KEY = "username";
 
 let config;
 let dynamoClient: any;
 
 if (process.env.NODE_ENV === "test") {
-    config = {
-      convertEmptyValues: true,
-      ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local",
-      }),
-    };
-    // create an instance of AWS
-    dynamoClient = new AWS.DynamoDB.DocumentClient(config);
-  } else {
-    // Access details stored in env foler under prestart
-    AWS.config.update({
-      region: process.env.AWS_DEFAULT_REGION,
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    });
-    // create an instance of AWS
-    dynamoClient = new AWS.DynamoDB.DocumentClient();
-  }
+  config = {
+    convertEmptyValues: true,
+    ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
+      endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+      sslEnabled: false,
+      region: "local",
+    }),
+  };
+  // create an instance of AWS
+  dynamoClient = new AWS.DynamoDB.DocumentClient(config);
+} else {
+  // Access details stored in env foler under prestart
+  AWS.config.update({
+    region: process.env.AWS_DEFAULT_REGION,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  });
+  // create an instance of AWS
+  dynamoClient = new AWS.DynamoDB.DocumentClient();
+}
 
 // Procures the sort key based on the input tablename. Added for simplicity's sake; must be updated if tables are modified
-function getSortKey(tableName: string){
+function getSortKey(tableName: string) {
   switch (tableName) {
-    case 'friends_and_blocked':
-      return 'fab_username';
-    case 'messages':
-      return 'message_id';
-    case 'notifications':
-      return 'notification_id';
-    case 'posts_and_comments':
-      return 'post_id';
+    case "messages":
+      return "message_id";
+    case "posts_and_comments":
+      return "post_id";
     default:
       return undefined;
   }
 }
 
 // Takes in expressions in the form of tuples; eg. ['message_parent_id', '10200405']
-function prepareScanParams(tableName: string, sortKey?: string, expressions?: Array<Array<string>>) {
+function prepareScanParams(
+  tableName: string,
+  sortKey?: string,
+  expressions?: Array<Array<string>>
+) {
   // Aliases are used by the computed properties, and by ExpressionAttributeNames
-    const keyAlias = `#${PRIMARY_KEY}`;
-    // This must be of type: ScanInput because typescript is persnickety. Secondary is any just in case a delete all is desired.
-    let scanParams: ScanInput = {
-      TableName: tableName,
-      ProjectionExpression: keyAlias,
-      ExpressionAttributeNames: {
-        [keyAlias]: PRIMARY_KEY,
-      }
-    }
-    // This permits operation even in tables with no sort key. Note the use of the spread operator (...) to let previous attributes persist
-    if (sortKey) {
-      const sortAlias = `#${sortKey}`;
-      scanParams.ProjectionExpression = `${keyAlias}, ${sortAlias}`
-      scanParams.ExpressionAttributeNames = {
-        ...scanParams.ExpressionAttributeNames,
-        [sortAlias]: sortKey,
-      }
-    }
-    // Permits to run without expressions, and builds FilterExpression, ExpressionAttributeNames, and ExpressionAttributeValues
-    //  using the values given in the expressions array
-    if (expressions) {
-      const filters = expressions.map((i) => {
-        const expressionAlias = `#${i[0]}`;
-        const expressionValueAlias = `:${i[0]}`;
-        scanParams = {
-          ...scanParams,
-          ExpressionAttributeNames: {
-            ...scanParams.ExpressionAttributeNames,
-            [expressionAlias]: i[0],
-          },
-          ExpressionAttributeValues: {
-            ...scanParams.ExpressionAttributeValues,
-            [expressionValueAlias]: {[i[0]]: i[1]},
-          }
-        }
-        return `#${i[0]} = :${i[0]}`;
-      })
-      let filterExpression = filters[0];
-      for (let i = 1; i < filters.length; i++) {
-        filterExpression += ' AND ' + filters[i];
-      }
+  const keyAlias = `#${PRIMARY_KEY}`;
+  // This must be of type: ScanInput because typescript is persnickety. Secondary is any just in case a delete all is desired.
+  let scanParams: ScanInput = {
+    TableName: tableName,
+    ProjectionExpression: keyAlias,
+    ExpressionAttributeNames: {
+      [keyAlias]: PRIMARY_KEY,
+    },
+  };
+  // This permits operation even in tables with no sort key. Note the use of the spread operator (...) to let previous attributes persist
+  if (sortKey) {
+    const sortAlias = `#${sortKey}`;
+    scanParams.ProjectionExpression = `${keyAlias}, ${sortAlias}`;
+    scanParams.ExpressionAttributeNames = {
+      ...scanParams.ExpressionAttributeNames,
+      [sortAlias]: sortKey,
+    };
+  }
+  // Permits to run without expressions, and builds FilterExpression, ExpressionAttributeNames, and ExpressionAttributeValues
+  //  using the values given in the expressions array
+  if (expressions) {
+    const filters = expressions.map((i) => {
+      const expressionAlias = `#${i[0]}`;
+      const expressionValueAlias = `:${i[0]}`;
       scanParams = {
         ...scanParams,
-        FilterExpression: filterExpression,
-      }
+        ExpressionAttributeNames: {
+          ...scanParams.ExpressionAttributeNames,
+          [expressionAlias]: i[0],
+        },
+        ExpressionAttributeValues: {
+          ...scanParams.ExpressionAttributeValues,
+          [expressionValueAlias]: { [i[0]]: i[1] },
+        },
+      };
+      return `#${i[0]} = :${i[0]}`;
+    });
+    let filterExpression = filters[0];
+    for (let i = 1; i < filters.length; i++) {
+      filterExpression += " AND " + filters[i];
     }
-    
-    return scanParams;
+    scanParams = {
+      ...scanParams,
+      FilterExpression: filterExpression,
+    };
+  }
+
+  return scanParams;
 }
 
 // Performs the scan, retrieving up to 250 items at once.
@@ -130,7 +130,7 @@ function prepareRequestParams(items?: ItemList, sortKey?: string) {
       },
     }));
   } else {
-    console.log('No items returned.');
+    logger.info("No items returned.");
   }
 
   return requestParams;
@@ -152,10 +152,13 @@ function sliceInChunks(arr: any) {
 }
 
 // Sends up to 10 consecutive delete operations of 25 items at a time.
-async function deleteItems(tableName: string, chunks: any, dynamo?: AWS.DynamoDB.DocumentClient) {
-
-  const promises = chunks.map(async function(chunk: any) {
-    const params = {RequestItems: {[tableName]: chunk}};
+async function deleteItems(
+  tableName: string,
+  chunks: any,
+  dynamo?: AWS.DynamoDB.DocumentClient
+) {
+  const promises = chunks.map(async function (chunk: any) {
+    const params = { RequestItems: { [tableName]: chunk } };
     const res = await dynamoClient.batchWrite(params).promise();
     return res;
   });
@@ -169,7 +172,10 @@ async function deleteItems(tableName: string, chunks: any, dynamo?: AWS.DynamoDB
  * Beware though: if the optional filter is not supplied, IT WILL BE TREATED AS A DELETE ALL
  * eg: deleteInBatch('messages', ['parent_message_id', '130201'], ['username', 'Jimmy']);
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-export default async function deleteInBatch(tableName: string, ...filter: Array<Array<string>>) {
+export default async function deleteInBatch(
+  tableName: string,
+  ...filter: Array<Array<string>>
+) {
   logger.info("getsortkey");
   const sortKey = getSortKey(tableName);
   logger.info("prepareScanParams");
@@ -183,5 +189,5 @@ export default async function deleteInBatch(tableName: string, ...filter: Array<
   logger.info("deleteItems");
   const res = await deleteItems(tableName, chunks);
   logger.info("stringify");
-  console.log(JSON.stringify(res));
+  logger.info(JSON.stringify(res));
 }

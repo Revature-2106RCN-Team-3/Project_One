@@ -48,6 +48,21 @@ module.exports = {
                 ReadCapacityUnits: 5,
                 WriteCapacityUnits: 5,
             },
+        },
+        {
+            TableName: "profile",
+            KeySchema: [{
+                AttributeName: "username",
+                KeyType: "HASH"
+            }],
+            AttributeDefinitions: [{
+                AttributeName: "username",
+                AttributeType: "S"
+            }],
+            ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+            },
         }
     ],
     basePort: 8000,

@@ -1,91 +1,116 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { IUser } from "../../entities/User";
-import logger from '../../shared/Logger';
-import AWS from 'aws-sdk';
+import logger from "../../shared/Logger";
+import AWS from "aws-sdk";
 
-// Access details stored in the env folder for the database
-AWS.config.update({
-  region: process.env.AWS_DEFAULT_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-})
+let config;
+let dynamoClient: any;
+if (process.env.NODE_ENV === "test") {
+  config = {
+    convertEmptyValues: true,
+    ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
+      endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+      sslEnabled: false,
+      region: "local",
+    }),
+  };
+  // create an instance of AWS
+  dynamoClient = new AWS.DynamoDB.DocumentClient(config);
+} else {
+  // Access details stored in env foler under prestart
+  AWS.config.update({
+    region: process.env.AWS_DEFAULT_REGION,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  });
+  // create an instance of AWS
+  dynamoClient = new AWS.DynamoDB.DocumentClient();
+}
 
-//constants for an instance of DocClient and table being accessed in database
-const dynamoClient = new AWS.DynamoDB.DocumentClient();
-const TABLE_NAME = "profile"
+//table being accessed in database
+const TABLE_NAME = "profile";
 
+// interface used for items below
 export interface IUserDao {
-  getOne: (username: string) => Promise<IUser | null>;
+  getOne: (user: IUser) => Promise<IUser | null>;
   getAll: (user: IUser) => Promise<IUser[]>;
   addUser: (user: IUser) => Promise<void>;
   updateUser: (user: IUser) => Promise<void>;
-  delete: (username: string) => Promise<void>;
+  deleteUser: (user: IUser) => Promise<void>;
 }
 
 class UserDao implements IUserDao {
-  
   //************************************************************************************************
   //* Get Operators
   //************************************************************************************************
-  
-  /**
+
+  /** COMPLETED!
+   *
    * References:
    *  https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.04.html
    *  https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html
-   * 
+   *
    * Returns a user by the username
    * @param username
    */
-  public getOne(username: string): Promise<IUser | null> {
+  public getOne(user: IUser): Promise<IUser | null> {
     logger.info("Using getOne route in users DAO");
     const params = {
       TableName: TABLE_NAME,
-      KeyConditionExpression: "#username = :username",
-      ExpressionAttributeNames:{
-        "#username": "username"
+      FilterExpression: "#username = :username",
+      ExpressionAttributeNames: {
+        "#username": "username",
       },
       ExpressionAttributeValues: {
-        ":username": username,
-      }
-    }
-    const db = dynamoClient.query(params).promise();
+        ":username": user.userName,
+      },
+    };
+    const db = dynamoClient.scan(params).promise();
     return db.then();
   }
 
-  /**
+  /** COMPLETED!
+   *
    * Returns all users in the table
    * @returns
    */
   public getAll(): Promise<IUser[]> {
     logger.info("Using getAll route in users DAO");
     const params = {
-      TableName: TABLE_NAME
+      TableName: TABLE_NAME,
     };
     const db = dynamoClient.scan(params).promise();
     return db.then();
   }
 
+  //************************************************************************************************
+  //* Post Operators
+  //************************************************************************************************
+
   /**
    * Adds a user's information
    * @param user
    */
-   public async addUser(user: IUser): Promise<void> {
+  public async addUser(user: IUser): Promise<void> {
     logger.info("Using add route in DAO");
-    const { username, first_name, last_name, phone_number, public_name } = user;
     const params = {
       TableName: TABLE_NAME,
       Item: {
-        username: username,
-        first_name: first_name,
-        last_name: last_name,
-        phone_number: phone_number,
-        public_name: public_name,
-      }
-    }
-
+        username: user.userName,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        phone_number: user.phoneNumber,
+        public_name: user.publicName
+      },
+    };
     await dynamoClient.put(params).promise();
     return Promise.resolve(undefined);
   }
 
+  //************************************************************************************************
+  //* Put Operators
+  //************************************************************************************************
 
   /**
    * Adds/Updates a user's information
@@ -95,27 +120,34 @@ class UserDao implements IUserDao {
     logger.info("Using add/update route in DAO");
     const params = {
       TableName: TABLE_NAME,
-      Item: user,
-      Key: {
-        "username": user.username
-      }
-    }
+      Item: {
+        username: user.userName,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        phone_number: user.phoneNumber,
+        public_name: user.publicName
+      },
+    };
     await dynamoClient.put(params).promise();
     return Promise.resolve(undefined);
   }
+
+  //************************************************************************************************
+  //*  Delete Operators
+  //************************************************************************************************
 
   /**
    * Deletes a user by the username
    * @param userName
    */
-  public async delete(username:string): Promise<void> {
+  public async deleteUser(user: IUser): Promise<void> {
     logger.info("Using delete route in users DAO");
     const params = {
       TableName: TABLE_NAME,
       Key: {
-        "username": username
-      }
-    }
+        "username": user.userName,
+      },
+    };
     await dynamoClient.delete(params).promise();
     return Promise.resolve(undefined);
   }

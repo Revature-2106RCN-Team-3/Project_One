@@ -52,6 +52,24 @@ export const postObj3 = {
   mainPost: Number(1),
 };
 
+export const userObj1 = {
+  userName: "bWayne@gotham.org",
+  firstName: "Bruce",
+  lastName: "Wayne",
+  phoneNumber: "546-456-8956",
+  publicName: "DarkKnight",
+}
+
+export const msgObj1 = {
+  userName: "Bob",
+  messageId: "safasdfas",
+  parentMessageId: "safasdf",
+  messageTimestamp: "",
+  messageText: "this is a message test",
+  senderPublicName: "senders public name?",
+  recipientPublicName: "recipientPublicName"
+}
+
 //************************************************************************************************
 //* json formatted objects to test routes
 //************************************************************************************************
@@ -60,8 +78,13 @@ export const postObj3 = {
 export const msgBody1 = {
   "messages":{
       "userName": "Bob",
-      "parentMessageId": "01"
-  }
+      "parentMessageId": "01",
+      "messageId": "10",
+      "messageTimestamp": "",
+      "messageText": "this is a message test",
+      "senderPublicName": "senders public name?",
+      "recipientPublicName": "recipientPublicName"
+  },
 }
 
 // json formatted post body to pass through routes
@@ -79,10 +102,11 @@ export const postBody1 = {
 };
 
 export const usersBody1 = {
-  "username": "matthewterry68.mt@gmail.com",
-  "first_name": "matthew",
-  "last_name": "terry",
-  "phone_number": "555-555-5555",
-  "publicName": "mat2718",
-  "userNameHash": ""
+  "user":{
+    "userName": "matthewterry68.mt@gmail.com",
+    "firstName": "matthew",
+    "lastName": "terry",
+    "phoneNumber": "555-555-5555",
+    "publicName": "mat2718",
+  }
 }
