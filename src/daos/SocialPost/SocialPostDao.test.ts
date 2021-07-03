@@ -20,61 +20,47 @@ const dao = new SocialPostDao();
  * resource used:
  * https://jestjs.io/docs/dynamodb
  */
-describe("[SOCIAL_POST_DAO][Test 1.0] - addComment and getComments", () => {
-  it("Should enter then read items from the table", async () => {
+describe("[SOCIAL_POST_DAO]", () => {
+  it("[Test 1.0] - addComment and getComments", async () => {
     await dao.addComment(postObj1);
     expect(await dao.getComments(postObj1)).toBeDefined();
   });
-});
 
-describe("[SOCIAL_POST_DAO][Test 2.0] - addMainPost and getPost", () => {
-  it("Should enter then read items from the table", async () => {
+  it("[Test 2.0] - addMainPost and getPost", async () => {
     await dao.addMainPost(postObj1);
     expect(await dao.getPost(postObj1)).toBeDefined();
   });
-});
 
-describe("[SOCIAL_POST_DAO][Test 3.0] - getAll", () => {
-  it("Should read all items in the table", async () => {
+  it("[Test 3.0] - getAll", async () => {
     expect(await dao.getAll()).toBeDefined();
   });
-});
 
-describe("[SOCIAL_POST_DAO][Test 4.0] - updateComment", () => {
-  it("Should enter then read items from the table", async () => {
+  it("[Test 4.0] - updateComment", async () => {
     await dao.updateComment(postObj1);
     expect(await dao.getPost(postObj1)).toBeDefined();
   });
-});
 
-describe("[SOCIAL_POST_DAO][Test 4.1] - updateComment", () => {
-  it("Should enter then read items from the table", async () => {
+  it("[Test 4.1] - updateComment", async () => {
     await dao.updateComment(postObj2);
     expect(await dao.getPost(postObj2)).toBeDefined();
   });
-});
 
-describe("[SOCIAL_POST_DAO][Test 5.0] - addLikeDislike", () => {
-  it("Should enter then read items from the table", async () => {
+  it("[Test 5.0] - addLikeDislike", async () => {
     await dao.addLikeDislike(postObj1);
     expect(await dao.getPost(postObj1)).toBeDefined();
   });
-});
-describe("[SOCIAL_POST_DAO][Test 5.1] - addLikeDislike", () => {
-  it("Should enter then read items from the table", async () => {
+
+  it("[Test 5.1] - addLikeDislike", async () => {
     await dao.addLikeDislike(postObj2);
     expect(await dao.getPost(postObj2)).toBeDefined();
   });
-});
-describe("[SOCIAL_POST_DAO][Test 5.2] - addLikeDislike", () => {
-  it("Should enter then read items from the table", async () => {
+
+  it("[Test 5.2] - addLikeDislike", async () => {
     await dao.addLikeDislike(postObj3);
     expect(await dao.getPost(postObj3)).toBeDefined();
   });
-});
 
-describe("[SOCIAL_POST_DAO][Test 6.0] - deletePost", () => {
-  it("Should delete then read items from table", async () => {
+  it("[Test 6.0] - deletePost", async () => {
     await dao.deletePost(postObj1);
     expect(await dao.getPost(postObj1)).toBeDefined();
   });

@@ -83,8 +83,8 @@
   "include": [
     "src/**/*.ts",
     "spec/**/*.ts"
-, "src/daos/SocialPost/SocialPostDao.test.old"  ],
+, "src/daos/SocialPost/SocialPostDao.test.old", "src/routes/index.test.ts"  ],
   "exclude": [
-    "src/public/"
+    "public"
   ]
 }

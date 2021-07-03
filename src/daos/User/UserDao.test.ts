@@ -1,61 +1,41 @@
-import "../../pre-start/test.env.ts";
-import UserDao from './UserDao';
-import { userTest1 } from './userTestObj';
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable max-len */
-/**
- * Resource used: 
- * https://jestjs.io/docs/dynamodb
- */
+import "../../pre-start/testEnviroment";
+import { userObj1 } from "../../pre-start/testObjects";
+import UserDao from "./UserDao";
 
 //configure jest settings
-const DEFAULT_JEST_TIMEOUT = 5000;
+const DEFAULT_JEST_TIMEOUT = 1000;
 jest.setTimeout(5 * DEFAULT_JEST_TIMEOUT);
-
-//create an instance of DAO
-// const isTest = process.env.MOCK_DYNAMODB_ENDPOINT;
-// const config = {
-//   convertEmptyValues: true,
-//   ...(isTest && {
-//     endpoint: "localhost:8000",
-//     sslEnabled: false,
-//     region: "local",
-//   }),
-// }
 
 const userDao = new UserDao();
 
+//************************************************************************************************
+//* Tests Start Here
+//************************************************************************************************
 
-describe("User Test 1 - getUser", () => {
-  it('Should read one user', async() => {
-    await userDao.getOne(userTest1.username);
-    expect(userTest1).toEqual({
-      username: String("bWayne@gotham.org"),
-      first_name: String("Bruce"),
-      last_name: String("Wayne"),
-      phone_number: String("546-456-8956"),
-      public_name: String("DarkKnight"),
-    });
+/**
+ * Resource used:
+ * https://jestjs.io/docs/dynamodb
+ */
+describe("[USER_DAO]", () => {
+  it("[Test 1.0] - addUser and getGetUser", async () => {
+    await userDao.addUser(userObj1);
+    expect(await userDao.getOne(userObj1)).toBeDefined();
+  });
+
+  it("[Test 2.0] - getAll", async () => {
+    expect(await userDao.getAll()).toBeDefined();
+  });
+
+  it("[Test 3.0] - updateUser", async () => {
+    await userDao.updateUser(userObj1);
+    expect(await userDao.getOne(userObj1)).toBeDefined();
+  });
+
+  it("[Test 4.0] - deleteUser", async () => {
+    await userDao.deleteUser(userObj1);
+    expect(await userDao.getOne(userObj1)).toBeDefined();
   });
 });
-
-describe("User Test 2 - getAll", () => {
-  it('Should read all users in the table', async() => {
-    expect(await userDao.getAll()).toBeDefined();
-  })
-})
-
-describe("User Test 3 - addUser", () => {
-  it('Should add a user in the table', async() => {
-    await userDao.addUser(userTest1);
-    expect(await userDao.getOne(userTest1.username)).toBeDefined();
-  })
-})
-
-describe("User Test 4 - delete", () => {
-  it('Should delete a user in the table', async() => {
-    await userDao.delete(userTest1.username);
-    expect(userTest1).toBeUndefined();
-  })
-})
