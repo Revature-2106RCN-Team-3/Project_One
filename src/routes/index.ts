@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable max-len */
 import { Router } from "express";
+import fs from 'fs';
 import {
   getAllUsers,
   addOneUser,
@@ -69,4 +70,9 @@ const baseRouter = Router();
 baseRouter.use("/home", postRouter);
 baseRouter.use("/home", messagesRouter);
 baseRouter.use("/home", userRouter);
+
+export const viewRouter = Router();
+viewRouter.get('/', (req, res) => fs.readFileSync('public/index.html'))
+
+
 export default baseRouter;

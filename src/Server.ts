@@ -7,7 +7,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import StatusCodes from 'http-status-codes';
 import 'express-async-errors';
 
-import BaseRouter from './routes';
+import BaseRouter, { viewRouter } from './routes';
 import logger from './shared/Logger';
 
 const app = express();
@@ -22,6 +22,11 @@ const { BAD_REQUEST } = StatusCodes;
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 // Show routes called in console during development
 if (process.env.NODE_ENV === 'development') {
@@ -35,6 +40,9 @@ if (process.env.NODE_ENV === 'production') {
 
 // Add APIs
 app.use('/api', BaseRouter);
+app.use('/', viewRouter);
+app.use(express.static("public"));
+
 
 // Print API errors
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
