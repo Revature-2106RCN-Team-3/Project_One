@@ -75,6 +75,7 @@ export async function getComments(req: Request, res: Response) {
 export async function addMainPost(req: Request, res: Response) {
   logger.info("addMainPost Controller");
   const { socialPosts } = req.body;
+  console.log(socialPosts.userName, socialPosts.postText)
   if (!socialPosts) {
     return res.status(BAD_REQUEST).json({
       error: paramMissingError,

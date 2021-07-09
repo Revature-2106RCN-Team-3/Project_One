@@ -142,7 +142,7 @@ class SocialPostDao implements IPostDao {
         username: postInfo.userName,
         post_id: id,
         parent_post_id: id,
-        post_date_time: stamp,
+        post_date_time: Date().toString(),
         post_text: postInfo.postText,
         main_post: 1,
       },
