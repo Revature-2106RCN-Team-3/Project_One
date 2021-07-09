@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Add APIs
 app.use('/api', BaseRouter);
-app.use('/', viewRouter);
+app.use('/home', viewRouter);
 app.use(express.static("public"));
 
 
