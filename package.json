@@ -6,7 +6,8 @@
     "lint": "eslint . --ext .ts",
     "start": "node -r module-alias/register ./dist --env=production",
     "start:dev": "nodemon",
-    "test:jest": "jest /src/daos/User --detectOpenHandles --coverage --colectCoverageFrom='./src/daos/User/**' --coverageDirectory='coverage'",
+    "taskkill": "taskkill /F /IM node.exe",
+    "test:jest": "jest /src/ --coverage --collectCoverageFrom='./src/**' --coverageDirectory='coverage'",
     "test": "nodemon --config ./spec/nodemon.json",
     "test:no-reloading": "./node_modules/.bin/ts-node -r tsconfig-paths/register ./spec"
   },
@@ -61,6 +62,7 @@
     "build.ts"
   ],
   "dependencies": {
+    "@babel/preset-flow": "^7.14.5",
     "command-line-args": "^5.1.1",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
@@ -73,6 +75,10 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.19.0",
+    "@aws-sdk/lib-dynamodb": "^3.19.0",
+    "@aws-sdk/util-dynamodb": "^3.19.0",
+    "@babel/preset-env": "^7.14.7",
     "@babel/preset-flow": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
     "@jest/types": "^27.0.6",
@@ -110,5 +116,11 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.3.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ]
   }
 }

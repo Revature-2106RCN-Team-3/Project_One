@@ -1,54 +1,67 @@
-const { DocumentClient } = require('aws-sdk/clients/dynamodb');
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable max-len */
+import "../../pre-start/testEnviroment";
+import {postObj1, postObj2, postObj3} from "../../pre-start/testObjects"
+import SocialPostDao from "./SocialPostDao";
 
-const isTest = process.env.JEST_WORKER_ID;
-const config = {
-    convertEmptyValues: true,
-    ...(isTest && {
-        endpoint: 'localhost:8000',
-        sslEnabled: false,
-        region: 'local-env',
-    }),
-};
+//configure basic jest settings
+const DEFAULT_JEST_TIMEOUT = 1000; //milliseconds
+jest.setTimeout(1 * DEFAULT_JEST_TIMEOUT);
 
-const ddb = new DocumentClient(config);
-const TABLE_NAME = 'test';
+// create instance of social post dao
+const dao = new SocialPostDao();
+
+//************************************************************************************************
+//* tests start here
+//************************************************************************************************
 
 /**
  * resource used:
  * https://jestjs.io/docs/dynamodb
  */
-it('Should insert one item into table', async () => {
-    await ddb
-        .put({ TableName: TABLE_NAME, 
-            Item: { 
-                fips: 1, 
-                county: 'test county', 
-                population: 444, 
-                state: 'test state', 
-                statecode: 'test statecode' 
-            }
-        })
-        .promise();
+describe("[SOCIAL_POST_DAO]", () => {
+  it("[Test 1.0] - addComment and getComments", async () => {
+    await dao.addComment(postObj1);
+    expect(await dao.getComments(postObj1)).toBeDefined();
+  });
 
-    const { Item } = await ddb.get({ TableName: TABLE_NAME, Key: { fips: 1 } }).promise();
+  it("[Test 2.0] - addMainPost and getPost", async () => {
+    await dao.addMainPost(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
 
-    return expect(Item).toEqual({
-        fips: 1,
-        county: 'test county',
-        population: 444,
-        state: 'test state',
-        statecode: 'test statecode'
-    });
+  it("[Test 3.0] - getAll", async () => {
+    expect(await dao.getAll()).toBeDefined();
+  });
 
-});
+  it("[Test 4.0] - updateComment", async () => {
+    await dao.updateComment(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
 
-it('Should delete one item from table', async () => {
-    await ddb
-        .delete({ TableName: TABLE_NAME, Key: { fips: 1 } })
-        .promise();
+  it("[Test 4.1] - updateComment", async () => {
+    await dao.updateComment(postObj2);
+    expect(await dao.getPost(postObj2)).toBeDefined();
+  });
 
-    const { Item } = await ddb.get({ TableName: TABLE_NAME, Key: { fips: 1 } }).promise();
+  it("[Test 5.0] - addLikeDislike", async () => {
+    await dao.addLikeDislike(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
 
-    return expect(Item).withContext;
+  it("[Test 5.1] - addLikeDislike", async () => {
+    await dao.addLikeDislike(postObj2);
+    expect(await dao.getPost(postObj2)).toBeDefined();
+  });
 
+  it("[Test 5.2] - addLikeDislike", async () => {
+    await dao.addLikeDislike(postObj3);
+    expect(await dao.getPost(postObj3)).toBeDefined();
+  });
+
+  it("[Test 6.0] - deletePost", async () => {
+    await dao.deletePost(postObj1);
+    expect(await dao.getPost(postObj1)).toBeDefined();
+  });
 });
